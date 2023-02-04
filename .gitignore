@@ -1,0 +1,9 @@
+/.idea/
+/.vs/
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+/Plugins/Developer/RiderLink/
+Saved/
+*.sln
