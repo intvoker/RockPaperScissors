@@ -1,5 +1,4 @@
 // Copyright intvoker. All Rights Reserved.
 
-#pragma once
 
-#include "CoreMinimal.h"
+#include "RPS_GameModeBase.h"
