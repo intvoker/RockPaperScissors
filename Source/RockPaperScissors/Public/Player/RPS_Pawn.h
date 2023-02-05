@@ -56,9 +56,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	EOculusHandType ActiveHand = EOculusHandType::HandLeft;
+	EOculusHandType ActiveHandType = EOculusHandType::HandLeft;
 
-	void SetActiveHand(EOculusHandType ActiveHandParam) { ActiveHand = ActiveHandParam; }
+	void SetActiveHandType(EOculusHandType ActiveHandTypeParam) { ActiveHandType = ActiveHandTypeParam; }
 
 	UPoseableHandComponent* GetActivePoseableHandComponent() const;
 	UHandPoseRecognizer* GetActiveHandPoseRecognizer() const;

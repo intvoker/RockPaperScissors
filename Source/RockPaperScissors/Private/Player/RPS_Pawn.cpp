@@ -75,9 +75,11 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	DECLARE_DELEGATE_OneParam(FSetActiveHandSignature, EOculusHandType);
 
 	PlayerInputComponent->BindAction<FSetActiveHandSignature>("SetActiveLeftHand", IE_Pressed, this,
-	                                                          &ThisClass::SetActiveHand, EOculusHandType::HandLeft);
+	                                                          &ThisClass::SetActiveHandType,
+	                                                          EOculusHandType::HandLeft);
 	PlayerInputComponent->BindAction<FSetActiveHandSignature>("SetActiveRightHand", IE_Pressed, this,
-	                                                          &ThisClass::SetActiveHand, EOculusHandType::HandRight);
+	                                                          &ThisClass::SetActiveHandType,
+	                                                          EOculusHandType::HandRight);
 
 	DECLARE_DELEGATE_OneParam(FSetPoseSignature, int32);
 
@@ -101,7 +103,7 @@ void ARPS_Pawn::BeginPlay()
 
 UPoseableHandComponent* ARPS_Pawn::GetActivePoseableHandComponent() const
 {
-	switch (ActiveHand)
+	switch (ActiveHandType)
 	{
 	case EOculusHandType::HandLeft:
 		return LeftPoseableHandComponent;
@@ -117,7 +119,7 @@ UPoseableHandComponent* ARPS_Pawn::GetActivePoseableHandComponent() const
 
 UHandPoseRecognizer* ARPS_Pawn::GetActiveHandPoseRecognizer() const
 {
-	switch (ActiveHand)
+	switch (ActiveHandType)
 	{
 	case EOculusHandType::HandLeft:
 		return LeftHandPoseRecognizer;
