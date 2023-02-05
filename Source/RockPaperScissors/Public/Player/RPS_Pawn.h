@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "OculusInputFunctionLibrary.h"
 #include "RPS_Pawn.generated.h"
 
 class UCameraComponent;
@@ -53,4 +54,19 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+	EOculusHandType ActiveHand = EOculusHandType::HandLeft;
+
+	void SetActiveHand(EOculusHandType ActiveHandParam) { ActiveHand = ActiveHandParam; }
+
+	UPoseableHandComponent* GetActivePoseableHandComponent() const;
+	UHandPoseRecognizer* GetActiveHandPoseRecognizer() const;
+
+	void SetHandPose(int32 PoseIndex);
+	void ClearHandPose();
+
+	void PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const;
+
+	static FName HandNameFromType(EOculusHandType HandType);
 };
