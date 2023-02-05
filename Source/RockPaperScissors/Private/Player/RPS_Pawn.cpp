@@ -4,8 +4,10 @@
 #include "Player/RPS_Pawn.h"
 
 #include "Camera/CameraComponent.h"
+#include "EngineUtils.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "HandPoseRecognizer.h"
+#include "Hands/RPS_Hand.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MotionControllerComponent.h"
 #include "OculusInputFunctionLibrary.h"
@@ -72,14 +74,19 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("LogRightHand", IE_Pressed, RightHandPoseRecognizer,
 	                                 &UHandPoseRecognizer::LogEncodedHandPose);
 
-	DECLARE_DELEGATE_OneParam(FSetActiveHandSignature, EOculusHandType);
+	DECLARE_DELEGATE_OneParam(FSetActiveHandTypeSignature, EOculusHandType);
 
-	PlayerInputComponent->BindAction<FSetActiveHandSignature>("SetActiveLeftHand", IE_Pressed, this,
-	                                                          &ThisClass::SetActiveHandType,
-	                                                          EOculusHandType::HandLeft);
-	PlayerInputComponent->BindAction<FSetActiveHandSignature>("SetActiveRightHand", IE_Pressed, this,
-	                                                          &ThisClass::SetActiveHandType,
-	                                                          EOculusHandType::HandRight);
+	PlayerInputComponent->BindAction<FSetActiveHandTypeSignature>("SetActiveLeftHand", IE_Pressed, this,
+	                                                              &ThisClass::SetActiveHandType,
+	                                                              EOculusHandType::HandLeft);
+	PlayerInputComponent->BindAction<FSetActiveHandTypeSignature>("SetActiveRightHand", IE_Pressed, this,
+	                                                              &ThisClass::SetActiveHandType,
+	                                                              EOculusHandType::HandRight);
+
+	PlayerInputComponent->BindAction("SetRivalActiveLeftHand", IE_Pressed, this,
+	                                 &ThisClass::SetRivalActiveLeftHand);
+	PlayerInputComponent->BindAction("SetRivalActiveRightHand", IE_Pressed, this,
+	                                 &ThisClass::SetRivalActiveRightHand);
 
 	DECLARE_DELEGATE_OneParam(FSetPoseSignature, int32);
 
@@ -99,6 +106,37 @@ void ARPS_Pawn::BeginPlay()
 	Super::BeginPlay();
 
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
+
+	for (const auto RivalHand : TActorRange<ARPS_Hand>(GetWorld()))
+	{
+		SetRivalHand(RivalHand);
+	}
+}
+
+void ARPS_Pawn::SetRivalActiveLeftHand()
+{
+	SetRivalActiveHand(RivalLeftHand);
+}
+
+void ARPS_Pawn::SetRivalActiveRightHand()
+{
+	SetRivalActiveHand(RivalRightHand);
+}
+
+void ARPS_Pawn::SetRivalHand(ARPS_Hand* RivalHandParam)
+{
+	switch (RivalHandParam->GetHandType())
+	{
+	case EOculusHandType::HandLeft:
+		RivalLeftHand = RivalHandParam;
+		break;
+	case EOculusHandType::HandRight:
+		RivalRightHand = RivalHandParam;
+		break;
+	case EOculusHandType::None:
+		break;
+	default: ;
+	}
 }
 
 UPoseableHandComponent* ARPS_Pawn::GetActivePoseableHandComponent() const
@@ -141,11 +179,21 @@ void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 	const auto Pose = GetActiveHandPoseRecognizer()->Poses[PoseIndex];
 
 	GetActivePoseableHandComponent()->SetPose(Pose.CustomEncodedPose);
+
+	if (RivalActiveHand)
+	{
+		RivalActiveHand->SetHandPose(Pose.CustomEncodedPose);
+	}
 }
 
 void ARPS_Pawn::ClearHandPose()
 {
 	GetActivePoseableHandComponent()->ClearPose();
+
+	if (RivalActiveHand)
+	{
+		RivalActiveHand->ClearHandPose();
+	}
 }
 
 void ARPS_Pawn::PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const

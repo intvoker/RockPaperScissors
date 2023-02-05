@@ -23,6 +23,10 @@ public:
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
+	EOculusHandType GetHandType() const { return HandType; }
+	void SetHandPose(FString PoseString) const;
+	void ClearHandPose() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* DefaultSceneRoot;

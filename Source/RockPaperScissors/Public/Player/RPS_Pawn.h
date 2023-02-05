@@ -7,6 +7,7 @@
 #include "OculusInputFunctionLibrary.h"
 #include "RPS_Pawn.generated.h"
 
+class ARPS_Hand;
 class UCameraComponent;
 class UHandPoseRecognizer;
 class UMotionControllerComponent;
@@ -52,21 +53,33 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UHandPoseRecognizer* RightHandPoseRecognizer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
+	ARPS_Hand* RivalLeftHand;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
+	ARPS_Hand* RivalRightHand;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	EOculusHandType ActiveHandType = EOculusHandType::HandLeft;
 
+	UPROPERTY()
+	ARPS_Hand* RivalActiveHand = nullptr;
+
 	void SetActiveHandType(EOculusHandType ActiveHandTypeParam) { ActiveHandType = ActiveHandTypeParam; }
+
+	void SetRivalActiveHand(ARPS_Hand* RivalActiveHandParam) { RivalActiveHand = RivalActiveHandParam; }
+	void SetRivalActiveLeftHand();
+	void SetRivalActiveRightHand();
+	void SetRivalHand(ARPS_Hand* RivalHandParam);
 
 	UPoseableHandComponent* GetActivePoseableHandComponent() const;
 	UHandPoseRecognizer* GetActiveHandPoseRecognizer() const;
-
 	void SetHandPose(int32 PoseIndex);
 	void ClearHandPose();
 
 	void PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const;
-
 	static FName HandNameFromType(EOculusHandType HandType);
 };
