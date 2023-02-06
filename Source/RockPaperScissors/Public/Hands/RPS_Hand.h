@@ -23,9 +23,13 @@ public:
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
+	UPoseableHandComponent* GetPoseableHandComponent() const { return PoseableHandComponent; }
+
 	EOculusHandType GetHandType() const { return HandType; }
-	void SetHandPose(FString PoseString) const;
-	void ClearHandPose() const;
+
+	void SetHandPose(FString PoseString);
+	void ClearHandPose();
+	bool IsActiveHandPose() const { return bActiveHandPose; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -41,4 +45,7 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+	bool bActiveHandPose = false;
 };

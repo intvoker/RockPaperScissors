@@ -62,6 +62,9 @@ void ARPS_Pawn::Tick(float DeltaTime)
 
 	PrintRecognizedHandPose(LeftHandPoseRecognizer);
 	PrintRecognizedHandPose(RightHandPoseRecognizer);
+
+	CopyHandToRival(LeftMotionControllerComponent, LeftPoseableHandComponent, RivalLeftHand);
+	CopyHandToRival(RightMotionControllerComponent, RightPoseableHandComponent, RivalRightHand);
 }
 
 // Called to bind functionality to input
@@ -111,16 +114,6 @@ void ARPS_Pawn::BeginPlay()
 	{
 		SetRivalHand(RivalHand);
 	}
-}
-
-void ARPS_Pawn::SetRivalActiveLeftHand()
-{
-	SetRivalActiveHand(RivalLeftHand);
-}
-
-void ARPS_Pawn::SetRivalActiveRightHand()
-{
-	SetRivalActiveHand(RivalRightHand);
 }
 
 void ARPS_Pawn::SetRivalHand(ARPS_Hand* RivalHandParam)
@@ -182,6 +175,8 @@ void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 
 	if (RivalActiveHand)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("RivalActiveHand: %s."), *RivalActiveHand->GetName());
+
 		RivalActiveHand->SetHandPose(Pose.CustomEncodedPose);
 	}
 }
@@ -226,4 +221,24 @@ FName ARPS_Pawn::HandNameFromType(EOculusHandType HandType)
 	}
 
 	return NAME_None;
+}
+
+void ARPS_Pawn::CopyHandToRival(const UMotionControllerComponent* SourceMCC, const UPoseableHandComponent* SourcePHC,
+                                const ARPS_Hand* RivalHand)
+{
+	if (!RivalHand)
+		return;
+
+	const auto RivalPHC = RivalHand->GetPoseableHandComponent();
+
+	RivalPHC->SetRelativeTransform(SourceMCC->GetRelativeTransform());
+
+	if (RivalHand->IsActiveHandPose())
+		return;
+
+	if (SourcePHC->bSkeletalMeshInitialized && RivalPHC->bSkeletalMeshInitialized)
+	{
+		RivalPHC->BoneSpaceTransforms = SourcePHC->BoneSpaceTransforms;
+	}
+	RivalPHC->MarkRefreshTransformDirty();
 }

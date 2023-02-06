@@ -38,14 +38,18 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
-void ARPS_Hand::SetHandPose(FString PoseString) const
+void ARPS_Hand::SetHandPose(FString PoseString)
 {
 	PoseableHandComponent->SetPose(PoseString);
+
+	bActiveHandPose = true;
 }
 
-void ARPS_Hand::ClearHandPose() const
+void ARPS_Hand::ClearHandPose()
 {
 	PoseableHandComponent->ClearPose();
+
+	bActiveHandPose = false;
 }
 
 void ARPS_Hand::PostSetHandType(EOculusHandType HandTypeParam) const

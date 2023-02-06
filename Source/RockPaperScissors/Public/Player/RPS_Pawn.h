@@ -62,18 +62,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void SetRivalHand(ARPS_Hand* RivalHandParam);
+
 private:
 	EOculusHandType ActiveHandType = EOculusHandType::HandLeft;
+	void SetActiveHandType(EOculusHandType ActiveHandTypeParam) { ActiveHandType = ActiveHandTypeParam; }
 
 	UPROPERTY()
 	ARPS_Hand* RivalActiveHand = nullptr;
-
-	void SetActiveHandType(EOculusHandType ActiveHandTypeParam) { ActiveHandType = ActiveHandTypeParam; }
-
 	void SetRivalActiveHand(ARPS_Hand* RivalActiveHandParam) { RivalActiveHand = RivalActiveHandParam; }
-	void SetRivalActiveLeftHand();
-	void SetRivalActiveRightHand();
-	void SetRivalHand(ARPS_Hand* RivalHandParam);
+	void SetRivalActiveLeftHand() { SetRivalActiveHand(RivalLeftHand); }
+	void SetRivalActiveRightHand() { SetRivalActiveHand(RivalRightHand); }
 
 	UPoseableHandComponent* GetActivePoseableHandComponent() const;
 	UHandPoseRecognizer* GetActiveHandPoseRecognizer() const;
@@ -82,4 +81,7 @@ private:
 
 	void PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const;
 	static FName HandNameFromType(EOculusHandType HandType);
+
+	static void CopyHandToRival(const UMotionControllerComponent* SourceMCC, const UPoseableHandComponent* SourcePHC,
+	                            const ARPS_Hand* RivalHand);
 };
