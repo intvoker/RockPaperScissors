@@ -54,10 +54,10 @@ protected:
 	UHandPoseRecognizer* RightHandPoseRecognizer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
-	ARPS_Hand* RivalLeftHand;
+	ARPS_Hand* LeftRivalHand;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
-	ARPS_Hand* RivalRightHand;
+	ARPS_Hand* RightRivalHand;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -69,10 +69,10 @@ private:
 	void SetActiveHandType(EOculusHandType ActiveHandTypeParam) { ActiveHandType = ActiveHandTypeParam; }
 
 	UPROPERTY()
-	ARPS_Hand* RivalActiveHand = nullptr;
-	void SetRivalActiveHand(ARPS_Hand* RivalActiveHandParam) { RivalActiveHand = RivalActiveHandParam; }
-	void SetRivalActiveLeftHand() { SetRivalActiveHand(RivalLeftHand); }
-	void SetRivalActiveRightHand() { SetRivalActiveHand(RivalRightHand); }
+	ARPS_Hand* ActiveRivalHand = nullptr;
+	void SetActiveRivalHand(ARPS_Hand* ActiveRivalHandParam) { ActiveRivalHand = ActiveRivalHandParam; }
+	void SetActiveLeftRivalHand() { SetActiveRivalHand(LeftRivalHand); }
+	void SetActiveRightRivalHand() { SetActiveRivalHand(RightRivalHand); }
 
 	UPoseableHandComponent* GetActivePoseableHandComponent() const;
 	UHandPoseRecognizer* GetActiveHandPoseRecognizer() const;

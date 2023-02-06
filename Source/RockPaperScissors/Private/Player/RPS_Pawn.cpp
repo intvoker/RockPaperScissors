@@ -63,8 +63,8 @@ void ARPS_Pawn::Tick(float DeltaTime)
 	PrintRecognizedHandPose(LeftHandPoseRecognizer);
 	PrintRecognizedHandPose(RightHandPoseRecognizer);
 
-	CopyHandToRival(LeftMotionControllerComponent, LeftPoseableHandComponent, RivalLeftHand);
-	CopyHandToRival(RightMotionControllerComponent, RightPoseableHandComponent, RivalRightHand);
+	CopyHandToRival(LeftMotionControllerComponent, LeftPoseableHandComponent, LeftRivalHand);
+	CopyHandToRival(RightMotionControllerComponent, RightPoseableHandComponent, RightRivalHand);
 }
 
 // Called to bind functionality to input
@@ -86,10 +86,10 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	                                                              &ThisClass::SetActiveHandType,
 	                                                              EOculusHandType::HandRight);
 
-	PlayerInputComponent->BindAction("SetRivalActiveLeftHand", IE_Pressed, this,
-	                                 &ThisClass::SetRivalActiveLeftHand);
-	PlayerInputComponent->BindAction("SetRivalActiveRightHand", IE_Pressed, this,
-	                                 &ThisClass::SetRivalActiveRightHand);
+	PlayerInputComponent->BindAction("SetActiveLeftRivalHand", IE_Pressed, this,
+	                                 &ThisClass::SetActiveLeftRivalHand);
+	PlayerInputComponent->BindAction("SetActiveRightRivalHand", IE_Pressed, this,
+	                                 &ThisClass::SetActiveRightRivalHand);
 
 	DECLARE_DELEGATE_OneParam(FSetPoseSignature, int32);
 
@@ -121,10 +121,10 @@ void ARPS_Pawn::SetRivalHand(ARPS_Hand* RivalHandParam)
 	switch (RivalHandParam->GetHandType())
 	{
 	case EOculusHandType::HandLeft:
-		RivalLeftHand = RivalHandParam;
+		LeftRivalHand = RivalHandParam;
 		break;
 	case EOculusHandType::HandRight:
-		RivalRightHand = RivalHandParam;
+		RightRivalHand = RivalHandParam;
 		break;
 	case EOculusHandType::None:
 		break;
@@ -173,11 +173,11 @@ void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 
 	GetActivePoseableHandComponent()->SetPose(Pose.CustomEncodedPose);
 
-	if (RivalActiveHand)
+	if (ActiveRivalHand)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("RivalActiveHand: %s."), *RivalActiveHand->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("ActiveRivalHand: %s."), *ActiveRivalHand->GetName());
 
-		RivalActiveHand->SetHandPose(Pose.CustomEncodedPose);
+		ActiveRivalHand->SetHandPose(Pose.CustomEncodedPose);
 	}
 }
 
@@ -185,9 +185,9 @@ void ARPS_Pawn::ClearHandPose()
 {
 	GetActivePoseableHandComponent()->ClearPose();
 
-	if (RivalActiveHand)
+	if (ActiveRivalHand)
 	{
-		RivalActiveHand->ClearHandPose();
+		ActiveRivalHand->ClearHandPose();
 	}
 }
 
