@@ -16,7 +16,14 @@ ARPS_Hand::ARPS_Hand()
 
 	PoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("PoseableHandComponent");
 	PostSetHandType(HandType);
+	PoseableHandComponent->bInitializePhysics = true;
 	PoseableHandComponent->SetupAttachment(GetRootComponent());
+
+	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
+	SkeletalMeshComponent->SetEnableGravity(false);
+	SkeletalMeshComponent->SetupAttachment(GetRootComponent());
+
+	SetSimulateHandPhysics(false);
 }
 
 // Called every frame
@@ -40,16 +47,47 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 
 void ARPS_Hand::SetHandPose(FString PoseString)
 {
-	PoseableHandComponent->SetPose(PoseString);
+	SkeletalMeshComponent->SetMasterPoseComponent(PoseableHandComponent);
+	//PoseableHandComponent->SetPose(PoseString);
 
 	bActiveHandPose = true;
 }
 
 void ARPS_Hand::ClearHandPose()
 {
-	PoseableHandComponent->ClearPose();
+	SkeletalMeshComponent->SetMasterPoseComponent(nullptr);
+	//PoseableHandComponent->ClearPose();
 
 	bActiveHandPose = false;
+}
+
+void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
+{
+	bHandPhysics = bEnabled;
+	
+	//Disable/Enable PoseableHandComponent
+	const auto CollisionEnabledPHC = bEnabled
+		? ECollisionEnabled::NoCollision
+		: ECollisionEnabled::QueryAndPhysics;
+
+	for (const auto CollisionCapsule : PoseableHandComponent->CollisionCapsules)
+	{
+		CollisionCapsule.Capsule->SetCollisionEnabled(CollisionEnabledPHC);
+	}
+	//PoseableHandComponent->SetVisibility(!bEnabled);
+
+	//Enable/Disable SkeletalMeshComponent
+	const auto CollisionEnabledSMC = bEnabled
+		? ECollisionEnabled::QueryAndPhysics
+		: ECollisionEnabled::NoCollision;
+	const auto CollisionProfileSMC = bEnabled
+		? UCollisionProfile::PhysicsActor_ProfileName
+		: UCollisionProfile::NoCollision_ProfileName;
+
+	SkeletalMeshComponent->SetSimulatePhysics(bEnabled);
+	SkeletalMeshComponent->SetCollisionEnabled(CollisionEnabledSMC);
+	SkeletalMeshComponent->SetCollisionProfileName(CollisionProfileSMC);
+	//SkeletalMeshComponent->SetVisibility(bEnabled);
 }
 
 void ARPS_Hand::PostSetHandType(EOculusHandType HandTypeParam) const
@@ -63,4 +101,29 @@ void ARPS_Hand::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UOculusInputFunctionLibrary::InitializeHandPhysics(PoseableHandComponent->SkeletonType, PoseableHandComponent);
+}
+
+void ARPS_Hand::CopyHandPose(const FTransform RelativeTransform, const UPoseableHandComponent* PHC) const
+{
+	PoseableHandComponent->SetRelativeTransform(RelativeTransform);
+
+	if (!bHandPhysics)
+	{
+		SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
+
+		FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
+		RootBoneRotation *= FixupRotation;
+		RootBoneRotation.Normalize();
+		SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
+	}
+
+	if (IsActiveHandPose())
+		return;
+
+	if (PHC->bSkeletalMeshInitialized && PoseableHandComponent->bSkeletalMeshInitialized)
+	{
+		PoseableHandComponent->BoneSpaceTransforms = PHC->BoneSpaceTransforms;
+	}
+	PoseableHandComponent->MarkRefreshTransformDirty();
 }

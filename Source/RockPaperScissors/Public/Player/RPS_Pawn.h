@@ -82,6 +82,6 @@ private:
 	void PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const;
 	static FName HandNameFromType(EOculusHandType HandType);
 
-	static void CopyHandToRival(const UMotionControllerComponent* SourceMCC, const UPoseableHandComponent* SourcePHC,
-	                            const ARPS_Hand* RivalHand);
+	void EnableHandPhysics();
+	void DisableHandPhysics();
 };

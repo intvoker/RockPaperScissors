@@ -23,13 +23,15 @@ public:
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
-	UPoseableHandComponent* GetPoseableHandComponent() const { return PoseableHandComponent; }
-
 	EOculusHandType GetHandType() const { return HandType; }
+
+	bool IsActiveHandPose() const { return bActiveHandPose; }
 
 	void SetHandPose(FString PoseString);
 	void ClearHandPose();
-	bool IsActiveHandPose() const { return bActiveHandPose; }
+	void CopyHandPose(FTransform RelativeTransform, const UPoseableHandComponent* PHC) const;
+
+	void SetSimulateHandPhysics(bool bEnabled);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -37,6 +39,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UPoseableHandComponent* PoseableHandComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* SkeletalMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
 	EOculusHandType HandType = EOculusHandType::HandLeft;
@@ -48,4 +53,8 @@ protected:
 
 private:
 	bool bActiveHandPose = false;
+
+	bool bHandPhysics = false;
+
+	FQuat FixupRotation = FQuat(0.0f, 0.0f, 0.5f, 0.5f);;
 };

@@ -34,6 +34,7 @@ ARPS_Pawn::ARPS_Pawn()
 	LeftPoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("LeftPoseableHandComponent");
 	LeftPoseableHandComponent->SkeletonType = EOculusHandType::HandLeft;
 	LeftPoseableHandComponent->MeshType = EOculusHandType::HandLeft;
+	LeftPoseableHandComponent->bInitializePhysics = true;
 	LeftPoseableHandComponent->SetupAttachment(LeftMotionControllerComponent);
 
 	LeftHandPoseRecognizer = CreateDefaultSubobject<UHandPoseRecognizer>("LeftHandPoseRecognizer");
@@ -48,6 +49,7 @@ ARPS_Pawn::ARPS_Pawn()
 	RightPoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("RightPoseableHandComponent");
 	RightPoseableHandComponent->SkeletonType = EOculusHandType::HandRight;
 	RightPoseableHandComponent->MeshType = EOculusHandType::HandRight;
+	RightPoseableHandComponent->bInitializePhysics = true;
 	RightPoseableHandComponent->SetupAttachment(RightMotionControllerComponent);
 
 	RightHandPoseRecognizer = CreateDefaultSubobject<UHandPoseRecognizer>("RightHandPoseRecognizer");
@@ -63,8 +65,8 @@ void ARPS_Pawn::Tick(float DeltaTime)
 	PrintRecognizedHandPose(LeftHandPoseRecognizer);
 	PrintRecognizedHandPose(RightHandPoseRecognizer);
 
-	CopyHandToRival(LeftMotionControllerComponent, LeftPoseableHandComponent, LeftRivalHand);
-	CopyHandToRival(RightMotionControllerComponent, RightPoseableHandComponent, RightRivalHand);
+	LeftRivalHand->CopyHandPose(LeftMotionControllerComponent->GetRelativeTransform(), LeftPoseableHandComponent);
+	RightRivalHand->CopyHandPose(RightMotionControllerComponent->GetRelativeTransform(), RightPoseableHandComponent);
 }
 
 // Called to bind functionality to input
@@ -101,6 +103,9 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("SetPose3", IE_Released, this, &ThisClass::ClearHandPose);
 	PlayerInputComponent->BindAction<FSetPoseSignature>("SetPose4", IE_Pressed, this, &ThisClass::SetHandPose, 3);
 	PlayerInputComponent->BindAction("SetPose4", IE_Released, this, &ThisClass::ClearHandPose);
+
+	PlayerInputComponent->BindAction("EnableHandPhysics", IE_Pressed, this, &ThisClass::EnableHandPhysics);
+	PlayerInputComponent->BindAction("DisableHandPhysics", IE_Pressed, this, &ThisClass::DisableHandPhysics);
 }
 
 // Called when the game starts or when spawned
@@ -114,6 +119,11 @@ void ARPS_Pawn::BeginPlay()
 	{
 		SetRivalHand(RivalHand);
 	}
+
+	UOculusInputFunctionLibrary::InitializeHandPhysics(LeftPoseableHandComponent->SkeletonType,
+	                                                   LeftPoseableHandComponent);
+	UOculusInputFunctionLibrary::InitializeHandPhysics(RightPoseableHandComponent->SkeletonType,
+	                                                   RightPoseableHandComponent);
 }
 
 void ARPS_Pawn::SetRivalHand(ARPS_Hand* RivalHandParam)
@@ -171,7 +181,7 @@ void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 
 	const auto Pose = GetActiveHandPoseRecognizer()->Poses[PoseIndex];
 
-	GetActivePoseableHandComponent()->SetPose(Pose.CustomEncodedPose);
+	//GetActivePoseableHandComponent()->SetPose(Pose.CustomEncodedPose);
 
 	if (ActiveRivalHand)
 	{
@@ -183,7 +193,7 @@ void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 
 void ARPS_Pawn::ClearHandPose()
 {
-	GetActivePoseableHandComponent()->ClearPose();
+	//GetActivePoseableHandComponent()->ClearPose();
 
 	if (ActiveRivalHand)
 	{
@@ -223,22 +233,14 @@ FName ARPS_Pawn::HandNameFromType(EOculusHandType HandType)
 	return NAME_None;
 }
 
-void ARPS_Pawn::CopyHandToRival(const UMotionControllerComponent* SourceMCC, const UPoseableHandComponent* SourcePHC,
-                                const ARPS_Hand* RivalHand)
+void ARPS_Pawn::EnableHandPhysics()
 {
-	if (!RivalHand)
-		return;
+	LeftRivalHand->SetSimulateHandPhysics(true);
+	RightRivalHand->SetSimulateHandPhysics(true);
+}
 
-	const auto RivalPHC = RivalHand->GetPoseableHandComponent();
-
-	RivalPHC->SetRelativeTransform(SourceMCC->GetRelativeTransform());
-
-	if (RivalHand->IsActiveHandPose())
-		return;
-
-	if (SourcePHC->bSkeletalMeshInitialized && RivalPHC->bSkeletalMeshInitialized)
-	{
-		RivalPHC->BoneSpaceTransforms = SourcePHC->BoneSpaceTransforms;
-	}
-	RivalPHC->MarkRefreshTransformDirty();
+void ARPS_Pawn::DisableHandPhysics()
+{
+	LeftRivalHand->SetSimulateHandPhysics(false);
+	RightRivalHand->SetSimulateHandPhysics(false);
 }
