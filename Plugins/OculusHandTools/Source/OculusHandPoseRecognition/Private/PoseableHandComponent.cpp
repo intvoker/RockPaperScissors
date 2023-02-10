@@ -3,6 +3,17 @@
 #include "PoseableHandComponent.h"
 #include "OculusHandPoseRecognitionModule.h"
 
+void UPoseableHandComponent::BeginPlay()
+{
+	// Unfortunately, bCustomHandMesh in UOculusHandComponent is private
+	if (SkeletalMesh)
+	{
+		bCustomHandMesh = true;
+	}
+
+	Super::BeginPlay();
+}
+
 void UPoseableHandComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -40,7 +51,17 @@ void UPoseableHandComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 void UPoseableHandComponent::UpdateBonePose(EBone Bone, ERecognizedBone PosedBone)
 {
-	auto const BoneIndex = (int)Bone;
+	auto BoneIndex = (int)Bone;
+
+	if (bCustomHandMesh && BoneNameMappings.Contains(Bone))
+	{
+		const auto MappedBoneIndex = SkeletalMesh->GetRefSkeleton().FindBoneIndex(BoneNameMappings[Bone]);
+		if (MappedBoneIndex != INDEX_NONE)
+		{
+			BoneIndex = MappedBoneIndex;
+		}
+	}
+
 	if (BoneSpaceTransforms.Num() > BoneIndex)
 	{
 		auto const TrackedRotation = BoneSpaceTransforms[BoneIndex].GetRotation();
