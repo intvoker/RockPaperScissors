@@ -46,10 +46,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
 	EOculusHandType HandType = EOculusHandType::HandLeft;
 
-	void PostSetHandType(EOculusHandType HandTypeParam) const;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void PostSetHandType(EOculusHandType HandTypeParam) const;
 
 private:
 	bool bActiveHandPose = false;

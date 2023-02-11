@@ -61,6 +61,30 @@ void ARPS_Hand::ClearHandPose()
 	bActiveHandPose = false;
 }
 
+void ARPS_Hand::CopyHandPose(const FTransform RelativeTransform, const UPoseableHandComponent* PHC) const
+{
+	PoseableHandComponent->SetRelativeTransform(RelativeTransform);
+
+	if (!bHandPhysics)
+	{
+		SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
+
+		FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
+		RootBoneRotation *= FixupRotation;
+		RootBoneRotation.Normalize();
+		SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
+	}
+
+	if (IsActiveHandPose())
+		return;
+
+	if (PHC->bSkeletalMeshInitialized && PoseableHandComponent->bSkeletalMeshInitialized)
+	{
+		PoseableHandComponent->BoneSpaceTransforms = PHC->BoneSpaceTransforms;
+	}
+	PoseableHandComponent->MarkRefreshTransformDirty();
+}
+
 void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 {
 	bHandPhysics = bEnabled;
@@ -103,38 +127,14 @@ void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 	//SkeletalMeshComponent->SetVisibility(bEnabled);
 }
 
-void ARPS_Hand::PostSetHandType(EOculusHandType HandTypeParam) const
-{
-	PoseableHandComponent->SkeletonType = HandTypeParam;
-	PoseableHandComponent->MeshType = HandTypeParam;
-}
-
 // Called when the game starts or when spawned
 void ARPS_Hand::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ARPS_Hand::CopyHandPose(const FTransform RelativeTransform, const UPoseableHandComponent* PHC) const
+void ARPS_Hand::PostSetHandType(EOculusHandType HandTypeParam) const
 {
-	PoseableHandComponent->SetRelativeTransform(RelativeTransform);
-
-	if (!bHandPhysics)
-	{
-		SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
-
-		FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
-		RootBoneRotation *= FixupRotation;
-		RootBoneRotation.Normalize();
-		SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
-	}
-
-	if (IsActiveHandPose())
-		return;
-
-	if (PHC->bSkeletalMeshInitialized && PoseableHandComponent->bSkeletalMeshInitialized)
-	{
-		PoseableHandComponent->BoneSpaceTransforms = PHC->BoneSpaceTransforms;
-	}
-	PoseableHandComponent->MarkRefreshTransformDirty();
+	PoseableHandComponent->SkeletonType = HandTypeParam;
+	PoseableHandComponent->MeshType = HandTypeParam;
 }
