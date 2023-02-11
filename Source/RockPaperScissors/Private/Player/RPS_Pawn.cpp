@@ -121,15 +121,15 @@ void ARPS_Pawn::BeginPlay()
 	}
 }
 
-void ARPS_Pawn::SetRivalHand(ARPS_Hand* RivalHandParam)
+void ARPS_Pawn::SetRivalHand(ARPS_Hand* InRivalHand)
 {
-	switch (RivalHandParam->GetHandType())
+	switch (InRivalHand->GetHandType())
 	{
 	case EOculusHandType::HandLeft:
-		LeftRivalHand = RivalHandParam;
+		LeftRivalHand = InRivalHand;
 		break;
 	case EOculusHandType::HandRight:
-		RightRivalHand = RivalHandParam;
+		RightRivalHand = InRivalHand;
 		break;
 	case EOculusHandType::None:
 		break;

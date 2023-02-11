@@ -49,7 +49,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void PostSetHandType(EOculusHandType HandTypeParam) const;
+	void PostSetHandType(EOculusHandType InHandType) const;
 
 private:
 	bool bActiveHandPose = false;

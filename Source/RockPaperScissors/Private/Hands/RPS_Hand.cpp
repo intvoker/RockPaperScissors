@@ -133,8 +133,8 @@ void ARPS_Hand::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ARPS_Hand::PostSetHandType(EOculusHandType HandTypeParam) const
+void ARPS_Hand::PostSetHandType(EOculusHandType InHandType) const
 {
-	PoseableHandComponent->SkeletonType = HandTypeParam;
-	PoseableHandComponent->MeshType = HandTypeParam;
+	PoseableHandComponent->SkeletonType = InHandType;
+	PoseableHandComponent->MeshType = InHandType;
 }

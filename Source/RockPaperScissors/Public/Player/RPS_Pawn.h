@@ -62,15 +62,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void SetRivalHand(ARPS_Hand* RivalHandParam);
+	void SetRivalHand(ARPS_Hand* InRivalHand);
 
 private:
 	EOculusHandType ActiveHandType = EOculusHandType::HandLeft;
-	void SetActiveHandType(EOculusHandType ActiveHandTypeParam) { ActiveHandType = ActiveHandTypeParam; }
+	void SetActiveHandType(EOculusHandType InActiveHandType) { ActiveHandType = InActiveHandType; }
 
 	UPROPERTY()
 	ARPS_Hand* ActiveRivalHand = nullptr;
-	void SetActiveRivalHand(ARPS_Hand* ActiveRivalHandParam) { ActiveRivalHand = ActiveRivalHandParam; }
+	void SetActiveRivalHand(ARPS_Hand* InActiveRivalHand) { ActiveRivalHand = InActiveRivalHand; }
 	void SetActiveLeftRivalHand() { SetActiveRivalHand(LeftRivalHand); }
 	void SetActiveRightRivalHand() { SetActiveRivalHand(RightRivalHand); }
 
