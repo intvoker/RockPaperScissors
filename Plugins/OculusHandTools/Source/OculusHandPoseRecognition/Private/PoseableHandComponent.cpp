@@ -82,13 +82,10 @@ void UPoseableHandComponent::AttachCollisionCapsules()
 			continue;
 
 		const auto BoneName = BoneNameMappings[CollisionCapsule.BoneId];
-
 		if (BoneName.IsNone())
 			continue;
 
-		const auto SavedRelativeTransform = CollisionCapsule.Capsule->GetRelativeTransform();
-		CollisionCapsule.Capsule->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetIncludingScale, BoneName);
-		CollisionCapsule.Capsule->SetRelativeTransform(SavedRelativeTransform);
+		CollisionCapsule.Capsule->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform, BoneName);
 	}
 }
 
