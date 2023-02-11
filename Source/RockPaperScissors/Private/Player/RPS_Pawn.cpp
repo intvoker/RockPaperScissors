@@ -119,11 +119,6 @@ void ARPS_Pawn::BeginPlay()
 	{
 		SetRivalHand(RivalHand);
 	}
-
-	UOculusInputFunctionLibrary::InitializeHandPhysics(LeftPoseableHandComponent->SkeletonType,
-	                                                   LeftPoseableHandComponent);
-	UOculusInputFunctionLibrary::InitializeHandPhysics(RightPoseableHandComponent->SkeletonType,
-	                                                   RightPoseableHandComponent);
 }
 
 void ARPS_Pawn::SetRivalHand(ARPS_Hand* RivalHandParam)

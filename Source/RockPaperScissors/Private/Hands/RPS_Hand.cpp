@@ -64,29 +64,42 @@ void ARPS_Hand::ClearHandPose()
 void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 {
 	bHandPhysics = bEnabled;
-	
+
 	//Disable/Enable PoseableHandComponent
+	const auto CollisionProfilePHC = bEnabled
+		? UCollisionProfile::NoCollision_ProfileName
+		: UCollisionProfile::PhysicsActor_ProfileName;
 	const auto CollisionEnabledPHC = bEnabled
 		? ECollisionEnabled::NoCollision
 		: ECollisionEnabled::QueryAndPhysics;
 
+	//UE_LOG(LogTemp, Warning, TEXT("CollisionProfilePHC: %s."), *CollisionProfilePHC.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("CollisionEnabledPHC: %s."), *UEnum::GetValueAsString(CollisionEnabledPHC));
+
 	for (const auto CollisionCapsule : PoseableHandComponent->CollisionCapsules)
 	{
+		CollisionCapsule.Capsule->SetCollisionProfileName(CollisionProfilePHC);
 		CollisionCapsule.Capsule->SetCollisionEnabled(CollisionEnabledPHC);
 	}
+
 	//PoseableHandComponent->SetVisibility(!bEnabled);
 
 	//Enable/Disable SkeletalMeshComponent
-	const auto CollisionEnabledSMC = bEnabled
-		? ECollisionEnabled::QueryAndPhysics
-		: ECollisionEnabled::NoCollision;
+	SkeletalMeshComponent->SetSimulatePhysics(bEnabled);
+
 	const auto CollisionProfileSMC = bEnabled
 		? UCollisionProfile::PhysicsActor_ProfileName
 		: UCollisionProfile::NoCollision_ProfileName;
+	const auto CollisionEnabledSMC = bEnabled
+		? ECollisionEnabled::QueryAndPhysics
+		: ECollisionEnabled::NoCollision;
 
-	SkeletalMeshComponent->SetSimulatePhysics(bEnabled);
-	SkeletalMeshComponent->SetCollisionEnabled(CollisionEnabledSMC);
+	//UE_LOG(LogTemp, Warning, TEXT("CollisionProfileSMC: %s."), *CollisionProfileSMC.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("CollisionEnabledSMC: %s."), *UEnum::GetValueAsString(CollisionEnabledSMC));
+
 	SkeletalMeshComponent->SetCollisionProfileName(CollisionProfileSMC);
+	SkeletalMeshComponent->SetCollisionEnabled(CollisionEnabledSMC);
+
 	//SkeletalMeshComponent->SetVisibility(bEnabled);
 }
 
@@ -100,8 +113,6 @@ void ARPS_Hand::PostSetHandType(EOculusHandType HandTypeParam) const
 void ARPS_Hand::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UOculusInputFunctionLibrary::InitializeHandPhysics(PoseableHandComponent->SkeletonType, PoseableHandComponent);
 }
 
 void ARPS_Hand::CopyHandPose(const FTransform RelativeTransform, const UPoseableHandComponent* PHC) const
