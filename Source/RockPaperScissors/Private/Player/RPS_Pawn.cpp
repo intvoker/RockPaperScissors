@@ -102,8 +102,12 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction<FSetPoseSignature>("SetPose4", IE_Pressed, this, &ThisClass::SetHandPose, 3);
 	PlayerInputComponent->BindAction("SetPose4", IE_Released, this, &ThisClass::ClearHandPose);
 
-	PlayerInputComponent->BindAction("EnableHandPhysics", IE_Pressed, this, &ThisClass::EnableHandPhysics);
-	PlayerInputComponent->BindAction("DisableHandPhysics", IE_Pressed, this, &ThisClass::DisableHandPhysics);
+	DECLARE_DELEGATE_OneParam(FSetSimulateHandPhysicsSignature, bool);
+
+	PlayerInputComponent->BindAction<FSetSimulateHandPhysicsSignature>("EnableHandPhysics", IE_Pressed, this,
+	                                                                   &ThisClass::SetSimulateHandPhysics, true);
+	PlayerInputComponent->BindAction<FSetSimulateHandPhysicsSignature>("DisableHandPhysics", IE_Pressed, this,
+	                                                                   &ThisClass::SetSimulateHandPhysics, false);
 }
 
 // Called when the game starts or when spawned
@@ -135,38 +139,6 @@ void ARPS_Pawn::SetRivalHand(ARPS_Hand* InRivalHand)
 	}
 }
 
-UPoseableHandComponent* ARPS_Pawn::GetActivePoseableHandComponent() const
-{
-	switch (ActiveHandType)
-	{
-	case EOculusHandType::HandLeft:
-		return LeftPoseableHandComponent;
-	case EOculusHandType::HandRight:
-		return RightPoseableHandComponent;
-	case EOculusHandType::None:
-		break;
-	default: ;
-	}
-
-	return nullptr;
-}
-
-UHandPoseRecognizer* ARPS_Pawn::GetActiveHandPoseRecognizer() const
-{
-	switch (ActiveHandType)
-	{
-	case EOculusHandType::HandLeft:
-		return LeftHandPoseRecognizer;
-	case EOculusHandType::HandRight:
-		return RightHandPoseRecognizer;
-	case EOculusHandType::None:
-		break;
-	default: ;
-	}
-
-	return nullptr;
-}
-
 void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 {
 	if (ActiveRivalHand)
@@ -183,14 +155,8 @@ void ARPS_Pawn::ClearHandPose()
 	}
 }
 
-void ARPS_Pawn::EnableHandPhysics()
+void ARPS_Pawn::SetSimulateHandPhysics(bool bEnabled)
 {
-	LeftRivalHand->SetSimulateHandPhysics(true);
-	RightRivalHand->SetSimulateHandPhysics(true);
-}
-
-void ARPS_Pawn::DisableHandPhysics()
-{
-	LeftRivalHand->SetSimulateHandPhysics(false);
-	RightRivalHand->SetSimulateHandPhysics(false);
+	LeftRivalHand->SetSimulateHandPhysics(bEnabled);
+	RightRivalHand->SetSimulateHandPhysics(bEnabled);
 }

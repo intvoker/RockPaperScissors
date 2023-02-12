@@ -53,32 +53,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UHandPoseRecognizer* RightHandPoseRecognizer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
-	ARPS_Hand* LeftRivalHand;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
-	ARPS_Hand* RightRivalHand;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	void SetRivalHand(ARPS_Hand* InRivalHand);
 
 private:
 	EOculusHandType ActiveHandType = EOculusHandType::HandLeft;
 	void SetActiveHandType(EOculusHandType InActiveHandType) { ActiveHandType = InActiveHandType; }
 
 	UPROPERTY()
+	ARPS_Hand* LeftRivalHand = nullptr;
+	UPROPERTY()
+	ARPS_Hand* RightRivalHand = nullptr;
+	UPROPERTY()
 	ARPS_Hand* ActiveRivalHand = nullptr;
+
+	void SetRivalHand(ARPS_Hand* InRivalHand);
 	void SetActiveRivalHand(ARPS_Hand* InActiveRivalHand) { ActiveRivalHand = InActiveRivalHand; }
 	void SetActiveLeftRivalHand() { SetActiveRivalHand(LeftRivalHand); }
 	void SetActiveRightRivalHand() { SetActiveRivalHand(RightRivalHand); }
 
-	UPoseableHandComponent* GetActivePoseableHandComponent() const;
-	UHandPoseRecognizer* GetActiveHandPoseRecognizer() const;
 	void SetHandPose(int32 PoseIndex);
 	void ClearHandPose();
 
-	void EnableHandPhysics();
-	void DisableHandPhysics();
+	void SetSimulateHandPhysics(bool bEnabled);
 };
