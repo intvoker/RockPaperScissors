@@ -65,8 +65,10 @@ void ARPS_Pawn::Tick(float DeltaTime)
 	PrintRecognizedHandPose(LeftHandPoseRecognizer);
 	PrintRecognizedHandPose(RightHandPoseRecognizer);
 
-	LeftRivalHand->CopyHandPose(LeftMotionControllerComponent->GetRelativeTransform(), LeftPoseableHandComponent);
-	RightRivalHand->CopyHandPose(RightMotionControllerComponent->GetRelativeTransform(), RightPoseableHandComponent);
+	LeftRivalHand->SetHandRelativeTransform(LeftMotionControllerComponent->GetRelativeTransform());
+	LeftRivalHand->CopyHandPose(LeftPoseableHandComponent);
+	RightRivalHand->SetHandRelativeTransform(RightMotionControllerComponent->GetRelativeTransform());
+	RightRivalHand->CopyHandPose(RightPoseableHandComponent);
 }
 
 // Called to bind functionality to input

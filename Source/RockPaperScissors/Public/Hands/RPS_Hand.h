@@ -25,11 +25,11 @@ public:
 
 	EOculusHandType GetHandType() const { return HandType; }
 
-	bool IsActiveHandPose() const { return bActiveHandPose; }
-
 	void SetHandPose(FString PoseString);
 	void ClearHandPose();
-	void CopyHandPose(FTransform RelativeTransform, const UPoseableHandComponent* PHC) const;
+
+	void SetHandRelativeTransform(const FTransform RelativeTransform) const;
+	void CopyHandPose(const UPoseableHandComponent* PHC) const;
 
 	void SetSimulateHandPhysics(bool bEnabled);
 
@@ -54,7 +54,7 @@ protected:
 private:
 	bool bActiveHandPose = false;
 
-	bool bHandPhysics = false;
+	bool bSimulateHandPhysics = false;
 
 	FQuat FixupRotation = FQuat(0.0f, 0.0f, 0.5f, 0.5f);;
 };

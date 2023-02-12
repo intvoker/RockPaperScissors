@@ -61,24 +61,24 @@ void ARPS_Hand::ClearHandPose()
 	bActiveHandPose = false;
 }
 
-void ARPS_Hand::CopyHandPose(const FTransform RelativeTransform, const UPoseableHandComponent* PHC) const
+void ARPS_Hand::SetHandRelativeTransform(const FTransform RelativeTransform) const
 {
 	PoseableHandComponent->SetRelativeTransform(RelativeTransform);
+	SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
+}
 
-	if (!bHandPhysics)
-	{
-		SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
-
-		FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
-		RootBoneRotation *= FixupRotation;
-		RootBoneRotation.Normalize();
-		SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
-	}
-
-	if (IsActiveHandPose())
+void ARPS_Hand::CopyHandPose(const UPoseableHandComponent* PHC) const
+{
+	if (bActiveHandPose)
 		return;
 
-	if (PHC->bSkeletalMeshInitialized && PoseableHandComponent->bSkeletalMeshInitialized)
+	FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
+	RootBoneRotation *= FixupRotation;
+	RootBoneRotation.Normalize();
+	SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
+
+	if (PHC->bSkeletalMeshInitialized && PoseableHandComponent->bSkeletalMeshInitialized
+		&& PoseableHandComponent->BoneSpaceTransforms.Num() == PHC->BoneSpaceTransforms.Num())
 	{
 		PoseableHandComponent->BoneSpaceTransforms = PHC->BoneSpaceTransforms;
 	}
@@ -87,7 +87,7 @@ void ARPS_Hand::CopyHandPose(const FTransform RelativeTransform, const UPoseable
 
 void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 {
-	bHandPhysics = bEnabled;
+	bSimulateHandPhysics = bEnabled;
 
 	//Disable/Enable PoseableHandComponent
 	const auto CollisionProfilePHC = bEnabled
@@ -106,7 +106,7 @@ void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 		CollisionCapsule.Capsule->SetCollisionEnabled(CollisionEnabledPHC);
 	}
 
-	//PoseableHandComponent->SetVisibility(!bEnabled);
+	PoseableHandComponent->SetVisibility(!bEnabled);
 
 	//Enable/Disable SkeletalMeshComponent
 	SkeletalMeshComponent->SetSimulatePhysics(bEnabled);
@@ -124,7 +124,7 @@ void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 	SkeletalMeshComponent->SetCollisionProfileName(CollisionProfileSMC);
 	SkeletalMeshComponent->SetCollisionEnabled(CollisionEnabledSMC);
 
-	//SkeletalMeshComponent->SetVisibility(bEnabled);
+	SkeletalMeshComponent->SetVisibility(bEnabled);
 }
 
 // Called when the game starts or when spawned
