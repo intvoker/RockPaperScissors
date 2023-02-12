@@ -8,7 +8,6 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "HandPoseRecognizer.h"
 #include "Hands/RPS_Hand.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "MotionControllerComponent.h"
 #include "OculusInputFunctionLibrary.h"
 #include "PoseableHandComponent.h"
@@ -61,9 +60,6 @@ ARPS_Pawn::ARPS_Pawn()
 void ARPS_Pawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	PrintRecognizedHandPose(LeftHandPoseRecognizer);
-	PrintRecognizedHandPose(RightHandPoseRecognizer);
 
 	LeftRivalHand->SetHandRelativeTransform(LeftMotionControllerComponent->GetRelativeTransform());
 	LeftRivalHand->CopyHandPose(LeftPoseableHandComponent);
@@ -173,61 +169,18 @@ UHandPoseRecognizer* ARPS_Pawn::GetActiveHandPoseRecognizer() const
 
 void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 {
-	if (PoseIndex < 0 || PoseIndex >= GetActiveHandPoseRecognizer()->Poses.Num())
-		return;
-
-	const auto Pose = GetActiveHandPoseRecognizer()->Poses[PoseIndex];
-
-	//GetActivePoseableHandComponent()->SetPose(Pose.CustomEncodedPose);
-
 	if (ActiveRivalHand)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("ActiveRivalHand: %s."), *ActiveRivalHand->GetName());
-
-		ActiveRivalHand->SetHandPose(Pose.CustomEncodedPose);
+		ActiveRivalHand->SetHandPose(PoseIndex);
 	}
 }
 
 void ARPS_Pawn::ClearHandPose()
 {
-	//GetActivePoseableHandComponent()->ClearPose();
-
 	if (ActiveRivalHand)
 	{
 		ActiveRivalHand->ClearHandPose();
 	}
-}
-
-void ARPS_Pawn::PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const
-{
-	int Index;
-	FString Name;
-	float Duration;
-	float Error;
-	float Confidence;
-
-	if (HandPoseRecognizer->GetRecognizedHandPose(Index, Name, Duration, Error, Confidence))
-	{
-		const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(HandPoseRecognizer->Side).ToString(),
-		                                    *Name);
-		UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
-	}
-}
-
-FName ARPS_Pawn::HandNameFromType(EOculusHandType HandType)
-{
-	switch (HandType)
-	{
-	case EOculusHandType::HandLeft:
-		return FXRMotionControllerBase::LeftHandSourceId;
-	case EOculusHandType::HandRight:
-		return FXRMotionControllerBase::RightHandSourceId;
-	case EOculusHandType::None:
-		break;
-	default: ;
-	}
-
-	return NAME_None;
 }
 
 void ARPS_Pawn::EnableHandPhysics()

@@ -7,6 +7,7 @@
 #include "OculusInputFunctionLibrary.h"
 #include "RPS_Hand.generated.h"
 
+class UHandPoseRecognizer;
 class UPoseableHandComponent;
 
 UCLASS()
@@ -25,6 +26,8 @@ public:
 
 	EOculusHandType GetHandType() const { return HandType; }
 
+	void PrintRecognizedHandPose() const;
+	void SetHandPose(int32 PoseIndex);
 	void SetHandPose(FString PoseString);
 	void ClearHandPose();
 
@@ -43,6 +46,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHandPoseRecognizer* HandPoseRecognizer;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
 	EOculusHandType HandType = EOculusHandType::HandLeft;
 
@@ -50,6 +56,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void PostSetHandType(EOculusHandType InHandType) const;
+
+	static FName HandNameFromType(EOculusHandType HandType);
 
 private:
 	bool bActiveHandPose = false;

@@ -3,7 +3,10 @@
 
 #include "Hands/RPS_Hand.h"
 
+#include "HandPoseRecognizer.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PoseableHandComponent.h"
+#include "XRMotionControllerBase.h"
 
 // Sets default values
 ARPS_Hand::ARPS_Hand()
@@ -15,13 +18,17 @@ ARPS_Hand::ARPS_Hand()
 	SetRootComponent(DefaultSceneRoot);
 
 	PoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("PoseableHandComponent");
-	PostSetHandType(HandType);
 	PoseableHandComponent->bInitializePhysics = true;
 	PoseableHandComponent->SetupAttachment(GetRootComponent());
 
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	SkeletalMeshComponent->SetEnableGravity(false);
 	SkeletalMeshComponent->SetupAttachment(GetRootComponent());
+
+	HandPoseRecognizer = CreateDefaultSubobject<UHandPoseRecognizer>("HandPoseRecognizer");
+	HandPoseRecognizer->SetupAttachment(GetRootComponent());
+
+	PostSetHandType(HandType);
 
 	SetSimulateHandPhysics(false);
 }
@@ -31,6 +38,7 @@ void ARPS_Hand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	PrintRecognizedHandPose();
 }
 
 void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -45,10 +53,36 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
+void ARPS_Hand::PrintRecognizedHandPose() const
+{
+	int Index;
+	FString Name;
+	float Duration;
+	float Error;
+	float Confidence;
+
+	if (HandPoseRecognizer->GetRecognizedHandPose(Index, Name, Duration, Error, Confidence))
+	{
+		const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(HandPoseRecognizer->Side).ToString(),
+		                                    *Name);
+		UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
+	}
+}
+
+void ARPS_Hand::SetHandPose(int32 PoseIndex)
+{
+	if (PoseIndex < 0 || PoseIndex >= HandPoseRecognizer->Poses.Num())
+		return;
+
+	const auto Pose = HandPoseRecognizer->Poses[PoseIndex];
+
+	SetHandPose(Pose.CustomEncodedPose);
+}
+
 void ARPS_Hand::SetHandPose(FString PoseString)
 {
 	SkeletalMeshComponent->SetMasterPoseComponent(PoseableHandComponent);
-	//PoseableHandComponent->SetPose(PoseString);
+	PoseableHandComponent->SetPose(PoseString);
 
 	bActiveHandPose = true;
 }
@@ -56,7 +90,7 @@ void ARPS_Hand::SetHandPose(FString PoseString)
 void ARPS_Hand::ClearHandPose()
 {
 	SkeletalMeshComponent->SetMasterPoseComponent(nullptr);
-	//PoseableHandComponent->ClearPose();
+	PoseableHandComponent->ClearPose();
 
 	bActiveHandPose = false;
 }
@@ -137,4 +171,21 @@ void ARPS_Hand::PostSetHandType(EOculusHandType InHandType) const
 {
 	PoseableHandComponent->SkeletonType = InHandType;
 	PoseableHandComponent->MeshType = InHandType;
+	HandPoseRecognizer->Side = InHandType;
+}
+
+FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
+{
+	switch (HandType)
+	{
+	case EOculusHandType::HandLeft:
+		return FXRMotionControllerBase::LeftHandSourceId;
+	case EOculusHandType::HandRight:
+		return FXRMotionControllerBase::RightHandSourceId;
+	case EOculusHandType::None:
+		break;
+	default: ;
+	}
+
+	return NAME_None;
 }

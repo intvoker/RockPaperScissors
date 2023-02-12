@@ -79,9 +79,6 @@ private:
 	void SetHandPose(int32 PoseIndex);
 	void ClearHandPose();
 
-	void PrintRecognizedHandPose(UHandPoseRecognizer* HandPoseRecognizer) const;
-	static FName HandNameFromType(EOculusHandType HandType);
-
 	void EnableHandPhysics();
 	void DisableHandPhysics();
 };
