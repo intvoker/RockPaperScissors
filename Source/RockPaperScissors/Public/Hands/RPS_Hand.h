@@ -19,20 +19,27 @@ public:
 	// Sets default values for this actor's properties
 	ARPS_Hand();
 
+	bool GetHasOwner() const { return bHasOwner; }
+	void SetHasOwner(bool bInHasOwner);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
+	virtual bool HasLocalNetOwner() const override;
+
+	UPoseableHandComponent* GetPoseableHandComponent() const { return PoseableHandComponent; }
 	EOculusHandType GetHandType() const { return HandType; }
 
+	void LogHandPose();
 	void PrintRecognizedHandPose() const;
 	void SetHandPose(int32 PoseIndex);
 	void SetHandPose(FString PoseString);
 	void ClearHandPose();
 
 	void SetHandRelativeTransform(const FTransform RelativeTransform) const;
-	void CopyHandPose(const UPoseableHandComponent* SourcePHC) const;
+	void CopyHandPose(const ARPS_Hand* SourceHand) const;
 
 	void SetSimulateHandPhysics(bool bEnabled);
 
@@ -59,10 +66,14 @@ protected:
 
 	static FName HandNameFromType(EOculusHandType HandType);
 
+	void UpdateSkeletalMeshComponentTransform() const;
+
 private:
+	bool bHasOwner = false;
+
 	bool bActiveHandPose = false;
 
 	bool bSimulateHandPhysics = false;
 
-	FQuat FixupRotation = FQuat(0.0f, 0.0f, 0.5f, 0.5f);;
+	FQuat HandRootFixupRotation = FQuat(0.0f, 0.0f, 0.5f, 0.5f);;
 };

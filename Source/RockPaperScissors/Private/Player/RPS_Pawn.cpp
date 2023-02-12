@@ -5,12 +5,10 @@
 
 #include "Camera/CameraComponent.h"
 #include "EngineUtils.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
-#include "HandPoseRecognizer.h"
 #include "Hands/RPS_Hand.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
 #include "OculusInputFunctionLibrary.h"
-#include "PoseableHandComponent.h"
 #include "XRMotionControllerBase.h"
 
 // Sets default values
@@ -30,30 +28,16 @@ ARPS_Pawn::ARPS_Pawn()
 	LeftMotionControllerComponent->MotionSource = FXRMotionControllerBase::LeftHandSourceId;
 	LeftMotionControllerComponent->SetupAttachment(GetRootComponent());
 
-	LeftPoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("LeftPoseableHandComponent");
-	LeftPoseableHandComponent->SkeletonType = EOculusHandType::HandLeft;
-	LeftPoseableHandComponent->MeshType = EOculusHandType::HandLeft;
-	LeftPoseableHandComponent->bInitializePhysics = true;
-	LeftPoseableHandComponent->SetupAttachment(LeftMotionControllerComponent);
-
-	LeftHandPoseRecognizer = CreateDefaultSubobject<UHandPoseRecognizer>("LeftHandPoseRecognizer");
-	LeftHandPoseRecognizer->Side = EOculusHandType::HandLeft;
-	LeftHandPoseRecognizer->SetupAttachment(LeftMotionControllerComponent);
+	LeftChildActorComponent = CreateDefaultSubobject<UChildActorComponent>("LeftChildActorComponent");
+	LeftChildActorComponent->SetupAttachment(LeftMotionControllerComponent);
 
 	RightMotionControllerComponent = CreateDefaultSubobject<UMotionControllerComponent>(
 		"RightMotionControllerComponent");
 	RightMotionControllerComponent->MotionSource = FXRMotionControllerBase::RightHandSourceId;
 	RightMotionControllerComponent->SetupAttachment(GetRootComponent());
 
-	RightPoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("RightPoseableHandComponent");
-	RightPoseableHandComponent->SkeletonType = EOculusHandType::HandRight;
-	RightPoseableHandComponent->MeshType = EOculusHandType::HandRight;
-	RightPoseableHandComponent->bInitializePhysics = true;
-	RightPoseableHandComponent->SetupAttachment(RightMotionControllerComponent);
-
-	RightHandPoseRecognizer = CreateDefaultSubobject<UHandPoseRecognizer>("RightHandPoseRecognizer");
-	RightHandPoseRecognizer->Side = EOculusHandType::HandRight;
-	RightHandPoseRecognizer->SetupAttachment(RightMotionControllerComponent);
+	RightChildActorComponent = CreateDefaultSubobject<UChildActorComponent>("RightChildActorComponent");
+	RightChildActorComponent->SetupAttachment(RightMotionControllerComponent);
 }
 
 // Called every frame
@@ -62,9 +46,9 @@ void ARPS_Pawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	LeftRivalHand->SetHandRelativeTransform(LeftMotionControllerComponent->GetRelativeTransform());
-	LeftRivalHand->CopyHandPose(LeftPoseableHandComponent);
+	LeftRivalHand->CopyHandPose(LeftHand);
 	RightRivalHand->SetHandRelativeTransform(RightMotionControllerComponent->GetRelativeTransform());
-	RightRivalHand->CopyHandPose(RightPoseableHandComponent);
+	RightRivalHand->CopyHandPose(RightHand);
 }
 
 // Called to bind functionality to input
@@ -72,34 +56,24 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("LogLeftHand", IE_Pressed, LeftHandPoseRecognizer,
-	                                 &UHandPoseRecognizer::LogEncodedHandPose);
-	PlayerInputComponent->BindAction("LogRightHand", IE_Pressed, RightHandPoseRecognizer,
-	                                 &UHandPoseRecognizer::LogEncodedHandPose);
+	PlayerInputComponent->BindAction("LogLeftHand", IE_Pressed, this, &ThisClass::LogLeftHand);
+	PlayerInputComponent->BindAction("LogRightHand", IE_Pressed, this, &ThisClass::LogRightHand);
 
-	DECLARE_DELEGATE_OneParam(FSetActiveHandTypeSignature, EOculusHandType);
+	PlayerInputComponent->BindAction("SetActiveLeftHand", IE_Pressed, this, &ThisClass::SetActiveLeftHand);
+	PlayerInputComponent->BindAction("SetActiveRightHand", IE_Pressed, this, &ThisClass::SetActiveRightHand);
 
-	PlayerInputComponent->BindAction<FSetActiveHandTypeSignature>("SetActiveLeftHand", IE_Pressed, this,
-	                                                              &ThisClass::SetActiveHandType,
-	                                                              EOculusHandType::HandLeft);
-	PlayerInputComponent->BindAction<FSetActiveHandTypeSignature>("SetActiveRightHand", IE_Pressed, this,
-	                                                              &ThisClass::SetActiveHandType,
-	                                                              EOculusHandType::HandRight);
+	PlayerInputComponent->BindAction("SetActiveLeftRivalHand", IE_Pressed, this, &ThisClass::SetActiveLeftRivalHand);
+	PlayerInputComponent->BindAction("SetActiveRightRivalHand", IE_Pressed, this, &ThisClass::SetActiveRightRivalHand);
 
-	PlayerInputComponent->BindAction("SetActiveLeftRivalHand", IE_Pressed, this,
-	                                 &ThisClass::SetActiveLeftRivalHand);
-	PlayerInputComponent->BindAction("SetActiveRightRivalHand", IE_Pressed, this,
-	                                 &ThisClass::SetActiveRightRivalHand);
+	DECLARE_DELEGATE_OneParam(FSetHandPoseSignature, int32);
 
-	DECLARE_DELEGATE_OneParam(FSetPoseSignature, int32);
-
-	PlayerInputComponent->BindAction<FSetPoseSignature>("SetPose1", IE_Pressed, this, &ThisClass::SetHandPose, 0);
+	PlayerInputComponent->BindAction<FSetHandPoseSignature>("SetPose1", IE_Pressed, this, &ThisClass::SetHandPose, 0);
 	PlayerInputComponent->BindAction("SetPose1", IE_Released, this, &ThisClass::ClearHandPose);
-	PlayerInputComponent->BindAction<FSetPoseSignature>("SetPose2", IE_Pressed, this, &ThisClass::SetHandPose, 1);
+	PlayerInputComponent->BindAction<FSetHandPoseSignature>("SetPose2", IE_Pressed, this, &ThisClass::SetHandPose, 1);
 	PlayerInputComponent->BindAction("SetPose2", IE_Released, this, &ThisClass::ClearHandPose);
-	PlayerInputComponent->BindAction<FSetPoseSignature>("SetPose3", IE_Pressed, this, &ThisClass::SetHandPose, 2);
+	PlayerInputComponent->BindAction<FSetHandPoseSignature>("SetPose3", IE_Pressed, this, &ThisClass::SetHandPose, 2);
 	PlayerInputComponent->BindAction("SetPose3", IE_Released, this, &ThisClass::ClearHandPose);
-	PlayerInputComponent->BindAction<FSetPoseSignature>("SetPose4", IE_Pressed, this, &ThisClass::SetHandPose, 3);
+	PlayerInputComponent->BindAction<FSetHandPoseSignature>("SetPose4", IE_Pressed, this, &ThisClass::SetHandPose, 3);
 	PlayerInputComponent->BindAction("SetPose4", IE_Released, this, &ThisClass::ClearHandPose);
 
 	DECLARE_DELEGATE_OneParam(FSetSimulateHandPhysicsSignature, bool);
@@ -117,30 +91,60 @@ void ARPS_Pawn::BeginPlay()
 
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 
+	SetupHands();
+
+	check(LeftHand);
+	check(RightHand);
+	check(LeftRivalHand);
+	check(RightRivalHand);
+}
+
+void ARPS_Pawn::SetupHands()
+{
+	LeftHand = Cast<ARPS_Hand>(LeftChildActorComponent->GetChildActor());
+	LeftHand->SetHasOwner(true);
+	RightHand = Cast<ARPS_Hand>(RightChildActorComponent->GetChildActor());
+	RightHand->SetHasOwner(true);
+
 	for (const auto RivalHand : TActorRange<ARPS_Hand>(GetWorld()))
 	{
-		SetRivalHand(RivalHand);
+		if (RivalHand->GetHasOwner())
+			continue;
+
+		RivalHand->SetHasOwner(false);
+
+		switch (RivalHand->GetHandType())
+		{
+		case EOculusHandType::HandLeft:
+			LeftRivalHand = RivalHand;
+			break;
+		case EOculusHandType::HandRight:
+			RightRivalHand = RivalHand;
+			break;
+		case EOculusHandType::None:
+			break;
+		default: ;
+		}
 	}
 }
 
-void ARPS_Pawn::SetRivalHand(ARPS_Hand* InRivalHand)
+void ARPS_Pawn::LogLeftHand()
 {
-	switch (InRivalHand->GetHandType())
-	{
-	case EOculusHandType::HandLeft:
-		LeftRivalHand = InRivalHand;
-		break;
-	case EOculusHandType::HandRight:
-		RightRivalHand = InRivalHand;
-		break;
-	case EOculusHandType::None:
-		break;
-	default: ;
-	}
+	LeftHand->LogHandPose();
+}
+
+void ARPS_Pawn::LogRightHand()
+{
+	RightHand->LogHandPose();
 }
 
 void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 {
+	if (ActiveHand)
+	{
+		ActiveHand->SetHandPose(PoseIndex);
+	}
+
 	if (ActiveRivalHand)
 	{
 		ActiveRivalHand->SetHandPose(PoseIndex);
@@ -149,6 +153,11 @@ void ARPS_Pawn::SetHandPose(int32 PoseIndex)
 
 void ARPS_Pawn::ClearHandPose()
 {
+	if (ActiveHand)
+	{
+		ActiveHand->ClearHandPose();
+	}
+
 	if (ActiveRivalHand)
 	{
 		ActiveRivalHand->ClearHandPose();
@@ -157,6 +166,9 @@ void ARPS_Pawn::ClearHandPose()
 
 void ARPS_Pawn::SetSimulateHandPhysics(bool bEnabled)
 {
+	LeftHand->SetSimulateHandPhysics(bEnabled);
+	RightHand->SetSimulateHandPhysics(bEnabled);
+
 	LeftRivalHand->SetSimulateHandPhysics(bEnabled);
 	RightRivalHand->SetSimulateHandPhysics(bEnabled);
 }

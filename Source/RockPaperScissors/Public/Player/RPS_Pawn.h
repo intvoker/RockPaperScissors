@@ -4,14 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "OculusInputFunctionLibrary.h"
 #include "RPS_Pawn.generated.h"
 
 class ARPS_Hand;
 class UCameraComponent;
-class UHandPoseRecognizer;
 class UMotionControllerComponent;
-class UPoseableHandComponent;
 
 UCLASS()
 class ROCKPAPERSCISSORS_API ARPS_Pawn : public APawn
@@ -39,26 +36,28 @@ protected:
 	UMotionControllerComponent* LeftMotionControllerComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPoseableHandComponent* LeftPoseableHandComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UHandPoseRecognizer* LeftHandPoseRecognizer;
+	UChildActorComponent* LeftChildActorComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UMotionControllerComponent* RightMotionControllerComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPoseableHandComponent* RightPoseableHandComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UHandPoseRecognizer* RightHandPoseRecognizer;
+	UChildActorComponent* RightChildActorComponent;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
-	EOculusHandType ActiveHandType = EOculusHandType::HandLeft;
-	void SetActiveHandType(EOculusHandType InActiveHandType) { ActiveHandType = InActiveHandType; }
+	UPROPERTY()
+	ARPS_Hand* LeftHand = nullptr;
+	UPROPERTY()
+	ARPS_Hand* RightHand = nullptr;
+	UPROPERTY()
+	ARPS_Hand* ActiveHand = nullptr;
+
+	void SetActiveHand(ARPS_Hand* InActiveHand) { ActiveHand = InActiveHand; }
+	void SetActiveLeftHand() { SetActiveHand(LeftHand); }
+	void SetActiveRightHand() { SetActiveHand(RightHand); }
 
 	UPROPERTY()
 	ARPS_Hand* LeftRivalHand = nullptr;
@@ -67,10 +66,14 @@ private:
 	UPROPERTY()
 	ARPS_Hand* ActiveRivalHand = nullptr;
 
-	void SetRivalHand(ARPS_Hand* InRivalHand);
 	void SetActiveRivalHand(ARPS_Hand* InActiveRivalHand) { ActiveRivalHand = InActiveRivalHand; }
 	void SetActiveLeftRivalHand() { SetActiveRivalHand(LeftRivalHand); }
 	void SetActiveRightRivalHand() { SetActiveRivalHand(RightRivalHand); }
+
+	void SetupHands();
+
+	void LogLeftHand();
+	void LogRightHand();
 
 	void SetHandPose(int32 PoseIndex);
 	void ClearHandPose();

@@ -33,10 +33,28 @@ ARPS_Hand::ARPS_Hand()
 	SetSimulateHandPhysics(false);
 }
 
+void ARPS_Hand::SetHasOwner(bool bInHasOwner)
+{
+	bHasOwner = bInHasOwner;
+
+	if (bHasOwner)
+	{
+		//restore Side
+		HandPoseRecognizer->Side = PoseableHandComponent->SkeletonType;
+	}
+	else
+	{
+		//HandPoseRecognizer is disabled
+		HandPoseRecognizer->Side = EOculusHandType::None;
+	}
+}
+
 // Called every frame
 void ARPS_Hand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateSkeletalMeshComponentTransform();
 
 	PrintRecognizedHandPose();
 }
@@ -51,6 +69,17 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 	}
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+
+bool ARPS_Hand::HasLocalNetOwner() const
+{
+	//workaround for UOculusHandComponent::TickComponent bHasAuthority = MyOwner->HasLocalNetOwner();
+	return bHasOwner;
+}
+
+void ARPS_Hand::LogHandPose()
+{
+	HandPoseRecognizer->LogEncodedHandPose();
 }
 
 void ARPS_Hand::PrintRecognizedHandPose() const
@@ -81,10 +110,10 @@ void ARPS_Hand::SetHandPose(int32 PoseIndex)
 
 void ARPS_Hand::SetHandPose(FString PoseString)
 {
+	bActiveHandPose = true;
+
 	SkeletalMeshComponent->SetMasterPoseComponent(PoseableHandComponent);
 	PoseableHandComponent->SetPose(PoseString);
-
-	bActiveHandPose = true;
 }
 
 void ARPS_Hand::ClearHandPose()
@@ -98,18 +127,14 @@ void ARPS_Hand::ClearHandPose()
 void ARPS_Hand::SetHandRelativeTransform(const FTransform RelativeTransform) const
 {
 	PoseableHandComponent->SetRelativeTransform(RelativeTransform);
-	SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
 }
 
-void ARPS_Hand::CopyHandPose(const UPoseableHandComponent* SourcePHC) const
+void ARPS_Hand::CopyHandPose(const ARPS_Hand* SourceHand) const
 {
 	if (bActiveHandPose)
 		return;
 
-	FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
-	RootBoneRotation *= FixupRotation;
-	RootBoneRotation.Normalize();
-	SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
+	const auto SourcePHC = SourceHand->GetPoseableHandComponent();
 
 	if (PoseableHandComponent->bSkeletalMeshInitialized && SourcePHC->bSkeletalMeshInitialized
 		&& PoseableHandComponent->BoneSpaceTransforms.Num() == SourcePHC->BoneSpaceTransforms.Num())
@@ -188,4 +213,17 @@ FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
 	}
 
 	return NAME_None;
+}
+
+void ARPS_Hand::UpdateSkeletalMeshComponentTransform() const
+{
+	SkeletalMeshComponent->SetRelativeTransform(PoseableHandComponent->GetRelativeTransform());
+
+	if (bActiveHandPose)
+		return;
+
+	FQuat RootBoneRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
+	RootBoneRotation *= HandRootFixupRotation;
+	RootBoneRotation.Normalize();
+	SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
 }
