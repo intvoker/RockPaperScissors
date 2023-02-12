@@ -29,7 +29,7 @@ public:
 	void ClearHandPose();
 
 	void SetHandRelativeTransform(const FTransform RelativeTransform) const;
-	void CopyHandPose(const UPoseableHandComponent* PHC) const;
+	void CopyHandPose(const UPoseableHandComponent* SourcePHC) const;
 
 	void SetSimulateHandPhysics(bool bEnabled);
 

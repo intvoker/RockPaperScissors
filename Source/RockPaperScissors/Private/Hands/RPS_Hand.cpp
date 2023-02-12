@@ -67,7 +67,7 @@ void ARPS_Hand::SetHandRelativeTransform(const FTransform RelativeTransform) con
 	SkeletalMeshComponent->SetRelativeTransform(RelativeTransform);
 }
 
-void ARPS_Hand::CopyHandPose(const UPoseableHandComponent* PHC) const
+void ARPS_Hand::CopyHandPose(const UPoseableHandComponent* SourcePHC) const
 {
 	if (bActiveHandPose)
 		return;
@@ -77,10 +77,10 @@ void ARPS_Hand::CopyHandPose(const UPoseableHandComponent* PHC) const
 	RootBoneRotation.Normalize();
 	SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
 
-	if (PHC->bSkeletalMeshInitialized && PoseableHandComponent->bSkeletalMeshInitialized
-		&& PoseableHandComponent->BoneSpaceTransforms.Num() == PHC->BoneSpaceTransforms.Num())
+	if (PoseableHandComponent->bSkeletalMeshInitialized && SourcePHC->bSkeletalMeshInitialized
+		&& PoseableHandComponent->BoneSpaceTransforms.Num() == SourcePHC->BoneSpaceTransforms.Num())
 	{
-		PoseableHandComponent->BoneSpaceTransforms = PHC->BoneSpaceTransforms;
+		PoseableHandComponent->BoneSpaceTransforms = SourcePHC->BoneSpaceTransforms;
 	}
 	PoseableHandComponent->MarkRefreshTransformDirty();
 }
