@@ -59,6 +59,7 @@ void ARPS_Hand::Tick(float DeltaTime)
 	PrintRecognizedHandPose();
 }
 
+#if WITH_EDITOR
 void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	const auto PropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
@@ -70,6 +71,7 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+#endif
 
 bool ARPS_Hand::HasLocalNetOwner() const
 {
