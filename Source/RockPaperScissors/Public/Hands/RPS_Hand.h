@@ -19,7 +19,8 @@ public:
 	// Sets default values for this actor's properties
 	ARPS_Hand();
 
-	bool GetHasOwner() const { return bHasOwner; }
+	void SetHandType(EOculusHandType InHandType);
+
 	void SetHasOwner(bool bInHasOwner);
 
 	// Called every frame
@@ -32,7 +33,6 @@ public:
 	virtual bool HasLocalNetOwner() const override;
 
 	UPoseableHandComponent* GetPoseableHandComponent() const { return PoseableHandComponent; }
-	EOculusHandType GetHandType() const { return HandType; }
 
 	void LogHandPose();
 	void PrintRecognizedHandPose() const;

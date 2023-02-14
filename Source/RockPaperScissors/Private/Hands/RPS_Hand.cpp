@@ -34,20 +34,19 @@ ARPS_Hand::ARPS_Hand()
 	SetSimulateHandPhysics(false);
 }
 
+void ARPS_Hand::SetHandType(EOculusHandType InHandType)
+{
+	HandType = InHandType;
+
+	PostSetHandType(HandType);
+}
+
 void ARPS_Hand::SetHasOwner(bool bInHasOwner)
 {
 	bHasOwner = bInHasOwner;
 
-	if (bHasOwner)
-	{
-		//restore Side
-		HandPoseRecognizer->Side = PoseableHandComponent->SkeletonType;
-	}
-	else
-	{
-		//HandPoseRecognizer is disabled
-		HandPoseRecognizer->Side = EOculusHandType::None;
-	}
+	// HandPoseRecognizer is disabled if Side is set to EOculusHandType::None
+	HandPoseRecognizer->Side = bHasOwner ? HandType : EOculusHandType::None;
 }
 
 // Called every frame
@@ -76,7 +75,7 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 
 bool ARPS_Hand::HasLocalNetOwner() const
 {
-	//workaround for UOculusHandComponent::TickComponent bHasAuthority = MyOwner->HasLocalNetOwner();
+	// Workaround for UOculusHandComponent::TickComponent bHasAuthority = MyOwner->HasLocalNetOwner();
 	return bHasOwner;
 }
 
@@ -95,8 +94,8 @@ void ARPS_Hand::PrintRecognizedHandPose() const
 
 	if (HandPoseRecognizer->GetRecognizedHandPose(Index, Name, Duration, Error, Confidence))
 	{
-		const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(HandPoseRecognizer->Side).ToString(),
-		                                    *Name);
+		const auto Output = FString::Printf(TEXT("%s %s"),
+		                                    *HandNameFromType(HandPoseRecognizer->Side).ToString(), *Name);
 		UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
 	}
 }
@@ -151,16 +150,13 @@ void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 {
 	bSimulateHandPhysics = bEnabled;
 
-	//Disable/Enable PoseableHandComponent
+	// Disable/Enable PoseableHandComponent
 	const auto CollisionProfilePHC = bEnabled
 		? UCollisionProfile::NoCollision_ProfileName
 		: UCollisionProfile::PhysicsActor_ProfileName;
 	const auto CollisionEnabledPHC = bEnabled
 		? ECollisionEnabled::NoCollision
 		: ECollisionEnabled::QueryAndPhysics;
-
-	//UE_LOG(LogTemp, Warning, TEXT("CollisionProfilePHC: %s."), *CollisionProfilePHC.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("CollisionEnabledPHC: %s."), *UEnum::GetValueAsString(CollisionEnabledPHC));
 
 	for (const auto CollisionCapsule : PoseableHandComponent->CollisionCapsules)
 	{
@@ -170,18 +166,16 @@ void ARPS_Hand::SetSimulateHandPhysics(bool bEnabled)
 
 	PoseableHandComponent->SetVisibility(!bEnabled);
 
-	//Enable/Disable SkeletalMeshComponent
+	// SetSimulatePhysics
 	SkeletalMeshComponent->SetSimulatePhysics(bEnabled);
 
+	// Enable/Disable SkeletalMeshComponent
 	const auto CollisionProfileSMC = bEnabled
 		? UCollisionProfile::PhysicsActor_ProfileName
 		: UCollisionProfile::NoCollision_ProfileName;
 	const auto CollisionEnabledSMC = bEnabled
 		? ECollisionEnabled::QueryAndPhysics
 		: ECollisionEnabled::NoCollision;
-
-	//UE_LOG(LogTemp, Warning, TEXT("CollisionProfileSMC: %s."), *CollisionProfileSMC.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("CollisionEnabledSMC: %s."), *UEnum::GetValueAsString(CollisionEnabledSMC));
 
 	SkeletalMeshComponent->SetCollisionProfileName(CollisionProfileSMC);
 	SkeletalMeshComponent->SetCollisionEnabled(CollisionEnabledSMC);

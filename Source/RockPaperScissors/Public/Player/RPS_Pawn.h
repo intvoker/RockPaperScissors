@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "OculusInputFunctionLibrary.h"
 #include "RPS_Pawn.generated.h"
 
 class ARPS_Hand;
@@ -44,6 +45,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UChildActorComponent* RightChildActorComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Hands")
+	bool bSpawnRivalHands = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hands", meta = (EditCondition = "bSpawnRivalHands"))
+	float RivalHandsDistance = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hands", meta = (EditCondition = "bSpawnRivalHands"))
+	TSubclassOf<ARPS_Hand> LeftRivalHandClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hands", meta = (EditCondition = "bSpawnRivalHands"))
+	TSubclassOf<ARPS_Hand> RightRivalHandClass;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -71,6 +84,7 @@ private:
 	void SetActiveRightRivalHand() { SetActiveRivalHand(RightRivalHand); }
 
 	void SetupHands();
+	ARPS_Hand* SpawnRivalHand(EOculusHandType HandType, TSubclassOf<ARPS_Hand> HandClass);
 
 	void LogLeftHand();
 	void LogRightHand();

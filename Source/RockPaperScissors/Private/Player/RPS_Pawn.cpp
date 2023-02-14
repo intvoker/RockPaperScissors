@@ -4,7 +4,6 @@
 #include "Player/RPS_Pawn.h"
 
 #include "Camera/CameraComponent.h"
-#include "EngineUtils.h"
 #include "Hands/RPS_Hand.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
@@ -45,10 +44,17 @@ void ARPS_Pawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	LeftRivalHand->SetHandRelativeTransform(LeftMotionControllerComponent->GetRelativeTransform());
-	LeftRivalHand->CopyHandPose(LeftHand);
-	RightRivalHand->SetHandRelativeTransform(RightMotionControllerComponent->GetRelativeTransform());
-	RightRivalHand->CopyHandPose(RightHand);
+	if (LeftRivalHand)
+	{
+		LeftRivalHand->SetHandRelativeTransform(LeftMotionControllerComponent->GetRelativeTransform());
+		LeftRivalHand->CopyHandPose(LeftHand);
+	}
+
+	if (RightRivalHand)
+	{
+		RightRivalHand->SetHandRelativeTransform(RightMotionControllerComponent->GetRelativeTransform());
+		RightRivalHand->CopyHandPose(RightHand);
+	}
 }
 
 // Called to bind functionality to input
@@ -92,11 +98,6 @@ void ARPS_Pawn::BeginPlay()
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 
 	SetupHands();
-
-	check(LeftHand);
-	check(RightHand);
-	check(LeftRivalHand);
-	check(RightRivalHand);
 }
 
 void ARPS_Pawn::SetupHands()
@@ -106,26 +107,33 @@ void ARPS_Pawn::SetupHands()
 	RightHand = Cast<ARPS_Hand>(RightChildActorComponent->GetChildActor());
 	RightHand->SetHasOwner(true);
 
-	for (const auto RivalHand : TActorRange<ARPS_Hand>(GetWorld()))
+	if (bSpawnRivalHands)
 	{
-		if (RivalHand->GetHasOwner())
-			continue;
-
-		RivalHand->SetHasOwner(false);
-
-		switch (RivalHand->GetHandType())
-		{
-		case EOculusHandType::HandLeft:
-			LeftRivalHand = RivalHand;
-			break;
-		case EOculusHandType::HandRight:
-			RightRivalHand = RivalHand;
-			break;
-		case EOculusHandType::None:
-			break;
-		default: ;
-		}
+		LeftRivalHand = SpawnRivalHand(EOculusHandType::HandLeft, LeftRivalHandClass);
+		RightRivalHand = SpawnRivalHand(EOculusHandType::HandRight, RightRivalHandClass);
 	}
+}
+
+ARPS_Hand* ARPS_Pawn::SpawnRivalHand(EOculusHandType HandType, TSubclassOf<ARPS_Hand> HandClass)
+{
+	auto HandLocation = GetActorLocation();
+	HandLocation += GetActorForwardVector() * RivalHandsDistance;
+
+	auto HandRotation = GetActorRotation();
+	HandRotation.Yaw = -180.0f;
+
+	const auto HandTransform = FTransform(HandRotation, HandLocation);
+
+	if (const auto Hand = GetWorld()->SpawnActorDeferred<ARPS_Hand>(HandClass, HandTransform))
+	{
+		Hand->SetHandType(HandType);
+		Hand->SetHasOwner(false);
+		Hand->FinishSpawning(HandTransform);
+
+		return Hand;
+	}
+
+	return nullptr;
 }
 
 void ARPS_Pawn::LogLeftHand()
@@ -169,6 +177,13 @@ void ARPS_Pawn::SetSimulateHandPhysics(bool bEnabled)
 	LeftHand->SetSimulateHandPhysics(bEnabled);
 	RightHand->SetSimulateHandPhysics(bEnabled);
 
-	LeftRivalHand->SetSimulateHandPhysics(bEnabled);
-	RightRivalHand->SetSimulateHandPhysics(bEnabled);
+	if (LeftRivalHand)
+	{
+		LeftRivalHand->SetSimulateHandPhysics(bEnabled);
+	}
+
+	if (RightRivalHand)
+	{
+		RightRivalHand->SetSimulateHandPhysics(bEnabled);
+	}
 }

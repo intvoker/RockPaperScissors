@@ -16,10 +16,10 @@ void URPS_PoseableHandComponent::BeginPlay()
 // Hackish way to attach CollisionCapsules generated for ovrpSkeleton2 to current SkeletalMesh (works with OculusHand SkeletalMesh)
 void URPS_PoseableHandComponent::AttachCollisionCapsules()
 {
-	//saving current SkeletalMesh
+	// Saving current SkeletalMesh
 	const auto SavedSkeletalMesh = SkeletalMesh;
 
-	//generating CollisionCapsules
+	// Generating CollisionCapsules
 	const auto TempSkeletalMesh = NewObject<USkeletalMesh>(this, TEXT("OculusHandMesh"));
 	if (TempSkeletalMesh)
 	{
@@ -31,10 +31,10 @@ void URPS_PoseableHandComponent::AttachCollisionCapsules()
 		}
 	}
 
-	//restoring current SkeletalMesh
+	// Restoring current SkeletalMesh
 	SetSkeletalMesh(SavedSkeletalMesh);
 
-	//attaching CollisionCapsules to current SkeletalMesh
+	// Attaching CollisionCapsules to current SkeletalMesh
 	for (const auto CollisionCapsule : CollisionCapsules)
 	{
 		if (!BoneNameMappings.Contains(CollisionCapsule.BoneId))
