@@ -3,6 +3,7 @@
 
 #include "Hands/RPS_Hand.h"
 
+#include "Components/RPS_PoseableHandComponent.h"
 #include "HandPoseRecognizer.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PoseableHandComponent.h"
@@ -17,7 +18,7 @@ ARPS_Hand::ARPS_Hand()
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SetRootComponent(DefaultSceneRoot);
 
-	PoseableHandComponent = CreateDefaultSubobject<UPoseableHandComponent>("PoseableHandComponent");
+	PoseableHandComponent = CreateDefaultSubobject<URPS_PoseableHandComponent>("PoseableHandComponent");
 	PoseableHandComponent->bInitializePhysics = true;
 	PoseableHandComponent->SetupAttachment(GetRootComponent());
 

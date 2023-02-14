@@ -30,8 +30,6 @@ public:
 protected:
 	bool bCustomHandMesh = false;
 
-	void AttachCollisionCapsules();
-
 private:
 	void UpdateBonePose(EBone Bone, ERecognizedBone PosedBone);
 
