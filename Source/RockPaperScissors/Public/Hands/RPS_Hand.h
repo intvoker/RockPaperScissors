@@ -19,10 +19,6 @@ public:
 	// Sets default values for this actor's properties
 	ARPS_Hand();
 
-	void SetHandType(EOculusHandType InHandType);
-
-	void SetHasOwner(bool bInHasOwner);
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -30,9 +26,13 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
-	virtual bool HasLocalNetOwner() const override;
-
 	UPoseableHandComponent* GetPoseableHandComponent() const { return PoseableHandComponent; }
+
+	void SetHandType(EOculusHandType InHandType);
+
+	void SetHasOwner(bool bInHasOwner);
+
+	virtual bool HasLocalNetOwner() const override;
 
 	void LogHandPose();
 
@@ -70,11 +70,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void PostSetHandType(EOculusHandType InHandType) const;
-
 	void UpdateSkeletalMeshComponentTransform() const;
 
 	void RecognizeHandPose() const;
+
+	void PostSetHandType(EOculusHandType InHandType) const;
 
 private:
 	bool bHasOwner = false;

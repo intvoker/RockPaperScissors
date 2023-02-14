@@ -34,21 +34,6 @@ ARPS_Hand::ARPS_Hand()
 	SetSimulateHandPhysics(false);
 }
 
-void ARPS_Hand::SetHandType(EOculusHandType InHandType)
-{
-	HandType = InHandType;
-
-	PostSetHandType(HandType);
-}
-
-void ARPS_Hand::SetHasOwner(bool bInHasOwner)
-{
-	bHasOwner = bInHasOwner;
-
-	// HandPoseRecognizer is disabled if Side is set to EOculusHandType::None
-	HandPoseRecognizer->Side = bHasOwner ? HandType : EOculusHandType::None;
-}
-
 // Called every frame
 void ARPS_Hand::Tick(float DeltaTime)
 {
@@ -73,6 +58,21 @@ void ARPS_Hand::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEve
 }
 #endif
 
+void ARPS_Hand::SetHandType(EOculusHandType InHandType)
+{
+	HandType = InHandType;
+
+	PostSetHandType(HandType);
+}
+
+void ARPS_Hand::SetHasOwner(bool bInHasOwner)
+{
+	bHasOwner = bInHasOwner;
+
+	// HandPoseRecognizer is disabled if Side is set to EOculusHandType::None
+	HandPoseRecognizer->Side = bHasOwner ? HandType : EOculusHandType::None;
+}
+
 bool ARPS_Hand::HasLocalNetOwner() const
 {
 	// Workaround for UOculusHandComponent::TickComponent bHasAuthority = MyOwner->HasLocalNetOwner();
@@ -84,27 +84,26 @@ void ARPS_Hand::LogHandPose()
 	HandPoseRecognizer->LogEncodedHandPose();
 }
 
-void ARPS_Hand::RecognizeHandPose() const
-{
-	int Index;
-	FString Name;
-	float Duration;
-	float Error;
-	float Confidence;
-
-	if (HandPoseRecognizer->GetRecognizedHandPose(Index, Name, Duration, Error, Confidence))
-	{
-		if (bPrintRecognizedHandPose)
-		{
-			PrintHandPose(HandPoseRecognizer->Side, Name);
-		}
-	}
-}
-
 void ARPS_Hand::PrintHandPose(EOculusHandType Side, FString Name) const
 {
 	const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(Side).ToString(), *Name);
 	UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
+}
+
+FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
+{
+	switch (HandType)
+	{
+	case EOculusHandType::HandLeft:
+		return FXRMotionControllerBase::LeftHandSourceId;
+	case EOculusHandType::HandRight:
+		return FXRMotionControllerBase::RightHandSourceId;
+	case EOculusHandType::None:
+		break;
+	default: ;
+	}
+
+	return NAME_None;
 }
 
 void ARPS_Hand::SetHandPose(int32 PoseIndex)
@@ -196,29 +195,6 @@ void ARPS_Hand::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ARPS_Hand::PostSetHandType(EOculusHandType InHandType) const
-{
-	PoseableHandComponent->SkeletonType = InHandType;
-	PoseableHandComponent->MeshType = InHandType;
-	HandPoseRecognizer->Side = InHandType;
-}
-
-FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
-{
-	switch (HandType)
-	{
-	case EOculusHandType::HandLeft:
-		return FXRMotionControllerBase::LeftHandSourceId;
-	case EOculusHandType::HandRight:
-		return FXRMotionControllerBase::RightHandSourceId;
-	case EOculusHandType::None:
-		break;
-	default: ;
-	}
-
-	return NAME_None;
-}
-
 void ARPS_Hand::UpdateSkeletalMeshComponentTransform() const
 {
 	SkeletalMeshComponent->SetRelativeTransform(PoseableHandComponent->GetRelativeTransform());
@@ -230,4 +206,28 @@ void ARPS_Hand::UpdateSkeletalMeshComponentTransform() const
 	RootBoneRotation *= HandRootFixupRotation;
 	RootBoneRotation.Normalize();
 	SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
+}
+
+void ARPS_Hand::RecognizeHandPose() const
+{
+	int Index;
+	FString Name;
+	float Duration;
+	float Error;
+	float Confidence;
+
+	if (HandPoseRecognizer->GetRecognizedHandPose(Index, Name, Duration, Error, Confidence))
+	{
+		if (bPrintRecognizedHandPose)
+		{
+			PrintHandPose(HandPoseRecognizer->Side, Name);
+		}
+	}
+}
+
+void ARPS_Hand::PostSetHandType(EOculusHandType InHandType) const
+{
+	PoseableHandComponent->SkeletonType = InHandType;
+	PoseableHandComponent->MeshType = InHandType;
+	HandPoseRecognizer->Side = InHandType;
 }
