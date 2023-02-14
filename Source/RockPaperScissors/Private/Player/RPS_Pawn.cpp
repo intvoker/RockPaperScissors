@@ -174,16 +174,13 @@ void ARPS_Pawn::ClearHandPose()
 
 void ARPS_Pawn::SetSimulateHandPhysics(bool bEnabled)
 {
-	LeftHand->SetSimulateHandPhysics(bEnabled);
-	RightHand->SetSimulateHandPhysics(bEnabled);
-
-	if (LeftRivalHand)
+	if (ActiveHand)
 	{
-		LeftRivalHand->SetSimulateHandPhysics(bEnabled);
+		ActiveHand->SetSimulateHandPhysics(bEnabled);
 	}
 
-	if (RightRivalHand)
+	if (ActiveRivalHand)
 	{
-		RightRivalHand->SetSimulateHandPhysics(bEnabled);
+		ActiveRivalHand->SetSimulateHandPhysics(bEnabled);
 	}
 }
