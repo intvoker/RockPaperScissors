@@ -88,6 +88,8 @@ void ARPS_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	                                                                   &ThisClass::SetSimulateHandPhysics, true);
 	PlayerInputComponent->BindAction<FSetSimulateHandPhysicsSignature>("DisableHandPhysics", IE_Pressed, this,
 	                                                                   &ThisClass::SetSimulateHandPhysics, false);
+
+	PlayerInputComponent->BindAction("ResetHands", IE_Pressed, this, &ThisClass::ResetHands);
 }
 
 // Called when the game starts or when spawned
@@ -182,5 +184,24 @@ void ARPS_Pawn::SetSimulateHandPhysics(bool bEnabled)
 	if (ActiveRivalHand)
 	{
 		ActiveRivalHand->SetSimulateHandPhysics(bEnabled);
+	}
+}
+
+void ARPS_Pawn::ResetHands()
+{
+	ActiveHand = nullptr;
+	ActiveRivalHand = nullptr;
+
+	LeftHand->SetSimulateHandPhysics(false);
+	RightHand->SetSimulateHandPhysics(false);
+
+	if (LeftRivalHand)
+	{
+		LeftRivalHand->SetSimulateHandPhysics(false);
+	}
+
+	if (RightRivalHand)
+	{
+		RightRivalHand->SetSimulateHandPhysics(false);
 	}
 }

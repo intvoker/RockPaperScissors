@@ -19,5 +19,4 @@ public:
 
 protected:
 	void AttachCollisionCapsules();
-
 };

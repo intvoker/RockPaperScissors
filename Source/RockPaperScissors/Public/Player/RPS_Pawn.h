@@ -93,4 +93,6 @@ private:
 	void ClearHandPose();
 
 	void SetSimulateHandPhysics(bool bEnabled);
+
+	void ResetHands();
 };
