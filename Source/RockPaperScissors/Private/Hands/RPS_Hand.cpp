@@ -56,7 +56,7 @@ void ARPS_Hand::Tick(float DeltaTime)
 
 	UpdateSkeletalMeshComponentTransform();
 
-	PrintRecognizedHandPose();
+	RecognizeHandPose();
 }
 
 #if WITH_EDITOR
@@ -84,7 +84,7 @@ void ARPS_Hand::LogHandPose()
 	HandPoseRecognizer->LogEncodedHandPose();
 }
 
-void ARPS_Hand::PrintRecognizedHandPose() const
+void ARPS_Hand::RecognizeHandPose() const
 {
 	int Index;
 	FString Name;
@@ -94,10 +94,17 @@ void ARPS_Hand::PrintRecognizedHandPose() const
 
 	if (HandPoseRecognizer->GetRecognizedHandPose(Index, Name, Duration, Error, Confidence))
 	{
-		const auto Output = FString::Printf(TEXT("%s %s"),
-		                                    *HandNameFromType(HandPoseRecognizer->Side).ToString(), *Name);
-		UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
+		if (bPrintRecognizedHandPose)
+		{
+			PrintHandPose(HandPoseRecognizer->Side, Name);
+		}
 	}
+}
+
+void ARPS_Hand::PrintHandPose(EOculusHandType Side, FString Name) const
+{
+	const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(Side).ToString(), *Name);
+	UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
 }
 
 void ARPS_Hand::SetHandPose(int32 PoseIndex)

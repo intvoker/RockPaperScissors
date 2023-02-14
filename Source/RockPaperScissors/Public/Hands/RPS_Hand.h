@@ -35,7 +35,10 @@ public:
 	UPoseableHandComponent* GetPoseableHandComponent() const { return PoseableHandComponent; }
 
 	void LogHandPose();
-	void PrintRecognizedHandPose() const;
+
+	void PrintHandPose(EOculusHandType Side, FString Name) const;
+	static FName HandNameFromType(EOculusHandType HandType);
+
 	void SetHandPose(int32 PoseIndex);
 	void SetHandPose(FString PoseString);
 	void ClearHandPose();
@@ -61,14 +64,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
 	EOculusHandType HandType = EOculusHandType::HandLeft;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
+	bool bPrintRecognizedHandPose = true;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void PostSetHandType(EOculusHandType InHandType) const;
 
-	static FName HandNameFromType(EOculusHandType HandType);
-
 	void UpdateSkeletalMeshComponentTransform() const;
+
+	void RecognizeHandPose() const;
 
 private:
 	bool bHasOwner = false;
