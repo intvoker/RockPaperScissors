@@ -87,7 +87,7 @@ private:
 	void SetActiveRightRivalHand() { SetActiveRivalHand(RightRivalHand); }
 
 	void SetupHands();
-	ARPS_Hand* SpawnRivalHand(EOculusHandType HandType, TSubclassOf<ARPS_Hand> HandClass);
+	ARPS_Hand* SpawnRivalHand(EOculusHandType HandType, TSubclassOf<ARPS_Hand> HandClass) const;
 
 	void LogLeftHand();
 	void LogRightHand();

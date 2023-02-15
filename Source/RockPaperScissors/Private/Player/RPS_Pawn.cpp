@@ -119,7 +119,7 @@ void ARPS_Pawn::SetupHands()
 	}
 }
 
-ARPS_Hand* ARPS_Pawn::SpawnRivalHand(EOculusHandType HandType, TSubclassOf<ARPS_Hand> HandClass)
+ARPS_Hand* ARPS_Pawn::SpawnRivalHand(EOculusHandType HandType, TSubclassOf<ARPS_Hand> HandClass) const
 {
 	auto HandLocation = GetActorLocation();
 	HandLocation += GetActorForwardVector() * RivalHandsDistance;

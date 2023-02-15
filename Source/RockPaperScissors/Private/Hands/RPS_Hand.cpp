@@ -82,7 +82,7 @@ bool ARPS_Hand::HasLocalNetOwner() const
 	return bHasOwner;
 }
 
-void ARPS_Hand::LogHandPose()
+void ARPS_Hand::LogHandPose() const
 {
 	HandPoseRecognizer->LogEncodedHandPose();
 }

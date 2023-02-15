@@ -41,7 +41,7 @@ public:
 
 	virtual bool HasLocalNetOwner() const override;
 
-	void LogHandPose();
+	void LogHandPose() const;
 
 	void PrintHandPose(EOculusHandType Side, FString Name) const;
 	static FName HandNameFromType(EOculusHandType HandType);
