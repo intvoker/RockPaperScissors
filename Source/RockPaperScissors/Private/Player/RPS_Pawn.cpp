@@ -106,8 +106,11 @@ void ARPS_Pawn::SetupHands()
 {
 	LeftHand = Cast<ARPS_Hand>(LeftChildActorComponent->GetChildActor());
 	LeftHand->SetHasOwner(true);
+	LeftHand->OnHandPoseRecognized.AddDynamic(this, &ThisClass::HandleOnHandPoseRecognizedLeft);
+
 	RightHand = Cast<ARPS_Hand>(RightChildActorComponent->GetChildActor());
 	RightHand->SetHasOwner(true);
+	RightHand->OnHandPoseRecognized.AddDynamic(this, &ThisClass::HandleOnHandPoseRecognizedRight);
 
 	if (bSpawnRivalHands)
 	{
@@ -204,4 +207,53 @@ void ARPS_Pawn::ResetHands()
 	{
 		RightRivalHand->SetSimulateHandPhysics(false);
 	}
+}
+
+void ARPS_Pawn::HandleOnHandPoseRecognizedLeft(int32 PoseIndex, FString PoseName)
+{
+	if (LeftRivalHand)
+	{
+		SetHandPose(LeftRivalHand, PoseIndex, PoseName);
+	}
+}
+
+void ARPS_Pawn::HandleOnHandPoseRecognizedRight(int32 PoseIndex, FString PoseName)
+{
+	if (RightRivalHand)
+	{
+		SetHandPose(RightRivalHand, PoseIndex, PoseName);
+	}
+}
+
+void ARPS_Pawn::SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, FString PoseName) const
+{
+	//UE_LOG(LogTemp, Warning, TEXT("SetHandPose: %s %d %s."), *Hand->GetName(), PoseIndex, *PoseName);
+
+	const auto WinPoseIndex = GetWinHandPoseIndex(PoseIndex);
+
+	if (WinPoseIndex != ARPS_Hand::DefaultHandPoseIndex)
+	{
+		Hand->SetHandPose(WinPoseIndex);
+	}
+	else
+	{
+		Hand->ClearHandPose();
+	}
+}
+
+int32 ARPS_Pawn::GetWinHandPoseIndex(int32 PoseIndex) const
+{
+	if (PoseIndex == ARPS_Hand::DefaultHandPoseIndex)
+		return ARPS_Hand::DefaultHandPoseIndex;
+
+	if (PoseIndex < 0 || PoseIndex >= NumberOfPlayingPoses)
+		return ARPS_Hand::DefaultHandPoseIndex;
+
+	auto WinPoseIndex = PoseIndex + 1;
+	if (WinPoseIndex >= NumberOfPlayingPoses)
+	{
+		WinPoseIndex = 0;
+	}
+
+	return WinPoseIndex;
 }

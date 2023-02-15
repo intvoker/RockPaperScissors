@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Hands", meta = (EditCondition = "bSpawnRivalHands"))
 	TSubclassOf<ARPS_Hand> RightRivalHandClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Hands", meta = (EditCondition = "bSpawnRivalHands"))
+	int32 NumberOfPlayingPoses = 3;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -95,4 +98,14 @@ private:
 	void SetSimulateHandPhysics(bool bEnabled);
 
 	void ResetHands();
+
+	UFUNCTION()
+	void HandleOnHandPoseRecognizedLeft(int32 PoseIndex, FString PoseName);
+
+	UFUNCTION()
+	void HandleOnHandPoseRecognizedRight(int32 PoseIndex, FString PoseName);
+
+	void SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, FString PoseName) const;
+
+	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
 };

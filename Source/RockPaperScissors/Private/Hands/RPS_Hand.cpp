@@ -9,6 +9,9 @@
 #include "PoseableHandComponent.h"
 #include "XRMotionControllerBase.h"
 
+const int32 ARPS_Hand::DefaultHandPoseIndex = INDEX_NONE;
+const FString ARPS_Hand::DefaultHandPoseName = TEXT("None");
+
 // Sets default values
 ARPS_Hand::ARPS_Hand()
 {
@@ -208,7 +211,7 @@ void ARPS_Hand::UpdateSkeletalMeshComponentTransform() const
 	SkeletalMeshComponent->SetRelativeRotation(RootBoneRotation);
 }
 
-void ARPS_Hand::RecognizeHandPose() const
+void ARPS_Hand::RecognizeHandPose()
 {
 	int Index;
 	FString Name;
@@ -222,6 +225,13 @@ void ARPS_Hand::RecognizeHandPose() const
 		{
 			PrintHandPose(HandPoseRecognizer->Side, Name);
 		}
+	}
+
+	if (CurrentHandPoseIndex != Index)
+	{
+		CurrentHandPoseIndex = Index;
+		CurrentHandPoseName = Name;
+		OnHandPoseRecognized.Broadcast(CurrentHandPoseIndex, CurrentHandPoseName);
 	}
 }
 

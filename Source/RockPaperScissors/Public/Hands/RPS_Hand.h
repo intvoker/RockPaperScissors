@@ -10,6 +10,8 @@
 class UHandPoseRecognizer;
 class UPoseableHandComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHandPoseRecognizedSignature, int32, PoseIndex, FString, PoseName);
+
 UCLASS()
 class ROCKPAPERSCISSORS_API ARPS_Hand : public AActor
 {
@@ -18,6 +20,11 @@ class ROCKPAPERSCISSORS_API ARPS_Hand : public AActor
 public:
 	// Sets default values for this actor's properties
 	ARPS_Hand();
+
+	static const int32 DefaultHandPoseIndex;
+	static const FString DefaultHandPoseName;
+
+	FHandPoseRecognizedSignature OnHandPoseRecognized;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -65,14 +72,14 @@ protected:
 	EOculusHandType HandType = EOculusHandType::HandLeft;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
-	bool bPrintRecognizedHandPose = true;
+	bool bPrintRecognizedHandPose = false;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void UpdateSkeletalMeshComponentTransform() const;
 
-	void RecognizeHandPose() const;
+	void RecognizeHandPose();
 
 	void PostSetHandType(EOculusHandType InHandType) const;
 
@@ -83,5 +90,8 @@ private:
 
 	bool bSimulateHandPhysics = false;
 
-	FQuat HandRootFixupRotation = FQuat(0.0f, 0.0f, 0.5f, 0.5f);;
+	FQuat HandRootFixupRotation = FQuat(0.0f, 0.0f, 0.5f, 0.5f);
+
+	int32 CurrentHandPoseIndex = DefaultHandPoseIndex;
+	FString CurrentHandPoseName = DefaultHandPoseName;
 };
