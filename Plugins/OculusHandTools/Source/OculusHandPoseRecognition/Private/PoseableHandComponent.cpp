@@ -5,10 +5,9 @@
 
 void UPoseableHandComponent::BeginPlay()
 {
-	// Unfortunately, bCustomHandMesh in UOculusHandComponent is private
 	if (SkeletalMesh)
 	{
-		bCustomHandMesh = true;
+		bCustomPoseableHandMesh = true;
 	}
 
 	Super::BeginPlay();
@@ -53,9 +52,9 @@ void UPoseableHandComponent::UpdateBonePose(EBone Bone, ERecognizedBone PosedBon
 {
 	auto BoneIndex = (int)Bone;
 
-	if (bCustomHandMesh && BoneNameMappings.Contains(Bone))
+	if (bCustomPoseableHandMesh && BoneNameMappings.Contains(Bone))
 	{
-		const auto MappedBoneIndex = SkeletalMesh->GetRefSkeleton().FindBoneIndex(BoneNameMappings[Bone]);
+		auto const MappedBoneIndex = SkeletalMesh->GetRefSkeleton().FindBoneIndex(BoneNameMappings[Bone]);
 		if (MappedBoneIndex != INDEX_NONE)
 		{
 			BoneIndex = MappedBoneIndex;

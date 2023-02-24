@@ -28,7 +28,7 @@ public:
 	float DefaultLerpSpeed = 10.f;
 
 protected:
-	bool bCustomHandMesh = false;
+	bool bCustomPoseableHandMesh = false;
 
 private:
 	void UpdateBonePose(EBone Bone, ERecognizedBone PosedBone);

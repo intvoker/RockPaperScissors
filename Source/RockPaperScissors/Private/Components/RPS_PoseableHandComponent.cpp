@@ -7,7 +7,7 @@ void URPS_PoseableHandComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (bCustomHandMesh && bInitializePhysics)
+	if (bCustomPoseableHandMesh && bInitializePhysics)
 	{
 		AttachCollisionCapsules();
 	}
