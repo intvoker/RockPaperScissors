@@ -10,7 +10,7 @@
 class UHandPoseRecognizer;
 class UPoseableHandComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHandPoseRecognizedSignature, int32, PoseIndex, FString, PoseName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHandPoseRecognizedSignature, int32, PoseIndex, const FString&, PoseName);
 
 UCLASS()
 class ROCKPAPERSCISSORS_API ARPS_Hand : public AActor
@@ -43,14 +43,14 @@ public:
 
 	void LogHandPose() const;
 
-	void PrintHandPose(EOculusHandType Side, FString Name) const;
+	void PrintHandPose(EOculusHandType Side, const FString& Name) const;
 	static FName HandNameFromType(EOculusHandType HandType);
 
 	void SetHandPose(int32 PoseIndex);
-	void SetHandPose(FString PoseString);
+	void SetHandPose(const FString& PoseString);
 	void ClearHandPose();
 
-	void SetHandRelativeTransform(const FTransform RelativeTransform) const;
+	void SetHandRelativeTransform(const FTransform& RelativeTransform) const;
 	void CopyHandPose(const ARPS_Hand* SourceHand) const;
 
 	void SetSimulateHandPhysics(bool bEnabled);

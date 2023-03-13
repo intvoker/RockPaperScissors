@@ -87,7 +87,7 @@ void ARPS_Hand::LogHandPose() const
 	HandPoseRecognizer->LogEncodedHandPose();
 }
 
-void ARPS_Hand::PrintHandPose(EOculusHandType Side, FString Name) const
+void ARPS_Hand::PrintHandPose(EOculusHandType Side, const FString& Name) const
 {
 	const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(Side).ToString(), *Name);
 	UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
@@ -119,7 +119,7 @@ void ARPS_Hand::SetHandPose(int32 PoseIndex)
 	SetHandPose(Pose.CustomEncodedPose);
 }
 
-void ARPS_Hand::SetHandPose(FString PoseString)
+void ARPS_Hand::SetHandPose(const FString& PoseString)
 {
 	bActiveHandPose = true;
 
@@ -135,7 +135,7 @@ void ARPS_Hand::ClearHandPose()
 	bActiveHandPose = false;
 }
 
-void ARPS_Hand::SetHandRelativeTransform(const FTransform RelativeTransform) const
+void ARPS_Hand::SetHandRelativeTransform(const FTransform& RelativeTransform) const
 {
 	PoseableHandComponent->SetRelativeTransform(RelativeTransform);
 }

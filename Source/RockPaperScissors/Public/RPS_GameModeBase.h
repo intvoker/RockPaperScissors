@@ -37,12 +37,12 @@ private:
 	ARPS_Pawn* SpawnRivalPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> RivalPawnClass) const;
 
 	UFUNCTION()
-	void HandleOnHandPoseRecognizedLeft(int32 PoseIndex, FString PoseName);
+	void HandleOnHandPoseRecognizedLeft(int32 PoseIndex, const FString& PoseName);
 
 	UFUNCTION()
-	void HandleOnHandPoseRecognizedRight(int32 PoseIndex, FString PoseName);
+	void HandleOnHandPoseRecognizedRight(int32 PoseIndex, const FString& PoseName);
 
-	void SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, FString PoseName) const;
+	void SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, const FString& PoseName) const;
 
 	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
 };

@@ -51,7 +51,7 @@ ARPS_Pawn* ARPS_GameModeBase::SpawnRivalPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_P
 	return nullptr;
 }
 
-void ARPS_GameModeBase::HandleOnHandPoseRecognizedLeft(int32 PoseIndex, FString PoseName)
+void ARPS_GameModeBase::HandleOnHandPoseRecognizedLeft(int32 PoseIndex, const FString& PoseName)
 {
 	if (!AIPawn)
 		return;
@@ -62,7 +62,7 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognizedLeft(int32 PoseIndex, FString 
 	}
 }
 
-void ARPS_GameModeBase::HandleOnHandPoseRecognizedRight(int32 PoseIndex, FString PoseName)
+void ARPS_GameModeBase::HandleOnHandPoseRecognizedRight(int32 PoseIndex, const FString& PoseName)
 {
 	if (!AIPawn)
 		return;
@@ -73,7 +73,7 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognizedRight(int32 PoseIndex, FString
 	}
 }
 
-void ARPS_GameModeBase::SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, FString PoseName) const
+void ARPS_GameModeBase::SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, const FString& PoseName) const
 {
 	if (!Hand)
 		return;
