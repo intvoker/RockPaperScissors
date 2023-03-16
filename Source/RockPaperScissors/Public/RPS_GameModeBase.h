@@ -12,16 +12,18 @@ class ARPS_Pawn;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameMatchStateChangedSignature, ERPS_GameMatchState, GameMatchState);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameRoundStateChangedSignature, ERPS_GameRoundState, GameRoundState);
+
 USTRUCT(BlueprintType)
 struct FRPS_GameData
 {
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 NumberOfRounds = 3;
+	int32 NumberOfRounds = 5;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 RoundTime = 3;
+	int32 RoundTime = 5;
 };
 
 /**
@@ -36,6 +38,7 @@ public:
 	ARPS_GameModeBase();
 
 	FGameMatchStateChangedSignature OnGameMatchStateChanged;
+	FGameRoundStateChangedSignature OnGameRoundStateChanged;
 
 	virtual void StartPlay() override;
 
@@ -50,6 +53,9 @@ protected:
 	int32 NumberOfPlayingPoses = 3;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	int32 StartRoundPoseIndex = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	FRPS_GameData GameData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
@@ -58,34 +64,43 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	bool IsPlayingPose(int32 PoseIndex) const { return PoseIndex >= 0 && PoseIndex < NumberOfPlayingPoses; }
+	bool IsStartRoundPose(int32 PoseIndex) const { return PoseIndex == StartRoundPoseIndex; }
+
 private:
 	UPROPERTY()
 	ARPS_Pawn* AIPawn;
 
 	ERPS_GameMatchState GameMatchState = ERPS_GameMatchState::None;
+	ERPS_GameRoundState GameRoundState = ERPS_GameRoundState::None;
 
 	int32 CurrentRoundIndex = 1;
 	int32 CurrentRoundRemainingSeconds = 0;
 	FTimerHandle UpdateRoundTimerHandle;
 
-	void SetGameMatchState(ERPS_GameMatchState InGameMatchState);
-
 	void SetupPawns();
+
+	void SetGameMatchState(ERPS_GameMatchState InGameMatchState);
+	void SetGameRoundState(ERPS_GameRoundState InGameRoundState);
+
+	void StartMatch();
+	void EndMatch();
 
 	void StartRound();
 	void UpdateRound();
-
-	void GameOver();
+	void EndRound();
 
 	ARPS_Pawn* SpawnRivalPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> RivalPawnClass) const;
 
 	UFUNCTION()
-	void HandleOnHandPoseRecognizedLeft(int32 PoseIndex, const FString& PoseName);
+	void HandleOnLeftHandPoseRecognized(int32 PoseIndex, const FString& PoseName);
 
 	UFUNCTION()
-	void HandleOnHandPoseRecognizedRight(int32 PoseIndex, const FString& PoseName);
+	void HandleOnRightHandPoseRecognized(int32 PoseIndex, const FString& PoseName);
 
-	void SetHandPose(ARPS_Hand* Hand, int32 PoseIndex, const FString& PoseName) const;
+	void HandleOnHandPoseRecognized(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName);
+
+	void SetHandPose(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName) const;
 
 	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
 };

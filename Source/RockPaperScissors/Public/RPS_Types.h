@@ -10,5 +10,13 @@ enum class ERPS_GameMatchState : uint8
 	None = 0,
 	Started,
 	Paused,
-	Finished
+	Ended
+};
+
+UENUM(BlueprintType)
+enum class ERPS_GameRoundState : uint8
+{
+	None = 0,
+	Started,
+	Ended
 };
