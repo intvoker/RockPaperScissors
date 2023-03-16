@@ -6,10 +6,46 @@
 #include "Hands/RPS_Hand.h"
 #include "Player/RPS_PlayerPawn.h"
 
+ARPS_GameModeBase::ARPS_GameModeBase()
+{
+	DefaultPawnClass = ARPS_PlayerPawn::StaticClass();
+}
+
 void ARPS_GameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
+	SetupPawns();
+
+	StartRound();
+
+	SetGameMatchState(ERPS_GameMatchState::Started);
+}
+
+void ARPS_GameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ARPS_GameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
+}
+
+void ARPS_GameModeBase::SetGameMatchState(ERPS_GameMatchState InGameMatchState)
+{
+	if (GameMatchState == InGameMatchState)
+		return;
+
+	GameMatchState = InGameMatchState;
+
+	OnGameMatchStateChanged.Broadcast(GameMatchState);
+}
+
+void ARPS_GameModeBase::SetupPawns()
+{
 	const auto PlayerController = GEngine->GetFirstLocalPlayerController(GetWorld());
 	if (!PlayerController)
 		return;
@@ -28,6 +64,40 @@ void ARPS_GameModeBase::StartPlay()
 	}
 
 	AIPawn = SpawnRivalPawn(Pawn, AIPawnClass);
+}
+
+void ARPS_GameModeBase::StartRound()
+{
+	CurrentRoundRemainingSeconds = GameData.RoundTime;
+
+	GetWorld()->GetTimerManager().SetTimer(UpdateRoundTimerHandle, this, &ThisClass::UpdateRound, UpdateRoundTime,
+	                                       true);
+}
+
+void ARPS_GameModeBase::UpdateRound()
+{
+	CurrentRoundRemainingSeconds -= UpdateRoundTime;
+
+	if (CurrentRoundRemainingSeconds <= 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
+
+		if (CurrentRoundIndex < GameData.NumberOfRounds)
+		{
+			CurrentRoundIndex++;
+
+			StartRound();
+		}
+		else
+		{
+			GameOver();
+		}
+	}
+}
+
+void ARPS_GameModeBase::GameOver()
+{
+	SetGameMatchState(ERPS_GameMatchState::Finished);
 }
 
 ARPS_Pawn* ARPS_GameModeBase::SpawnRivalPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> RivalPawnClass) const
