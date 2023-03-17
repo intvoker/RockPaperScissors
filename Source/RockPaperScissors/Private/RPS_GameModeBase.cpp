@@ -197,7 +197,7 @@ void ARPS_GameModeBase::SetHandPose(ARPS_Hand* AIHand, int32 PoseIndex, const FS
 	if (!AIHand)
 		return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("SetHandPose: %s %d %s."), *Hand->GetName(), PoseIndex, *PoseName);
+	//UE_LOG(LogTemp, Warning, TEXT("SetHandPose: %s %d %s."), *AIHand->GetName(), PoseIndex, *PoseName);
 
 	const auto WinPoseIndex = GetWinHandPoseIndex(PoseIndex);
 
@@ -216,7 +216,7 @@ int32 ARPS_GameModeBase::GetWinHandPoseIndex(int32 PoseIndex) const
 	if (PoseIndex == ARPS_Hand::DefaultHandPoseIndex)
 		return ARPS_Hand::DefaultHandPoseIndex;
 
-	if (PoseIndex < 0 || PoseIndex >= NumberOfPlayingPoses)
+	if (!IsPlayingPose(PoseIndex))
 		return ARPS_Hand::DefaultHandPoseIndex;
 
 	auto WinPoseIndex = PoseIndex + 1;
