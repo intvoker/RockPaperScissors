@@ -3,12 +3,14 @@
 
 #include "AI/RPS_AIPawn.h"
 
+#include "AI/RPS_AIController.h"
 #include "Hands/RPS_Hand.h"
 #include "Player/RPS_PlayerPawn.h"
 
 ARPS_AIPawn::ARPS_AIPawn()
 {
-
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = ARPS_AIController::StaticClass();
 }
 
 void ARPS_AIPawn::Tick(float DeltaTime)

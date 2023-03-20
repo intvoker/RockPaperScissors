@@ -5,10 +5,14 @@
 
 #include "Hands/RPS_Hand.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Player/RPS_PlayerController.h"
 #include "Player/RPS_PlayerPawn.h"
+#include "Player/RPS_PlayerState.h"
 
 ARPS_GameModeBase::ARPS_GameModeBase()
 {
+	PlayerControllerClass = ARPS_PlayerController::StaticClass();
+	PlayerStateClass = ARPS_PlayerState::StaticClass();
 	DefaultPawnClass = ARPS_PlayerPawn::StaticClass();
 }
 
