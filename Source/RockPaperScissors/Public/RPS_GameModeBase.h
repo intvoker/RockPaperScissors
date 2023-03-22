@@ -9,6 +9,7 @@
 
 class ARPS_Hand;
 class ARPS_Pawn;
+class ARPS_PlayerState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameMatchStateChangedSignature, ERPS_GameMatchState, GameMatchState);
 
@@ -74,7 +75,7 @@ private:
 	ERPS_GameMatchState GameMatchState = ERPS_GameMatchState::None;
 	ERPS_GameRoundState GameRoundState = ERPS_GameRoundState::None;
 
-	int32 CurrentRoundIndex = 1;
+	int32 CurrentRoundIndex = 0;
 	int32 CurrentRoundRemainingSeconds = 0;
 	FTimerHandle UpdateRoundTimerHandle;
 
@@ -91,6 +92,10 @@ private:
 	void EndRound();
 
 	ARPS_Pawn* SpawnRivalPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> RivalPawnClass) const;
+	static void ResetPawn(const ARPS_Pawn* Pawn);
+
+	ARPS_PlayerState* GetPlayerState() const;
+	ARPS_PlayerState* GetAIPlayerState() const;
 
 	UFUNCTION()
 	void HandleOnLeftHandPoseRecognized(int32 PoseIndex, const FString& PoseName);
@@ -103,4 +108,7 @@ private:
 	void SetHandPose(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName) const;
 
 	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
+
+	void PrintString(const FString& InString) const;
+	void PrintPlayerStates() const;
 };
