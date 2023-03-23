@@ -25,6 +25,28 @@ void ARPS_GameModeBase::StartPlay()
 	StartMatch();
 }
 
+void ARPS_GameModeBase::StartMatch()
+{
+	PrintString(TEXT("Start Match"));
+
+	SetGameMatchState(ERPS_GameMatchState::Started);
+
+	ResetCounters();
+
+	ResetPawn(AIPawn);
+}
+
+void ARPS_GameModeBase::EndMatch()
+{
+	PrintString(TEXT("End Match"));
+
+	SetGameMatchState(ERPS_GameMatchState::Ended);
+
+	ResetCounters();
+
+	PrintPlayerStates();
+}
+
 void ARPS_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -34,6 +56,13 @@ void ARPS_GameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
+}
+
+void ARPS_GameModeBase::ResetCounters()
+{
+	CurrentRoundIndex = 0;
+	CurrentRoundRemainingSeconds = GameData.RoundTime;
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
 }
 
@@ -77,22 +106,6 @@ void ARPS_GameModeBase::SetGameRoundState(ERPS_GameRoundState InGameRoundState)
 	GameRoundState = InGameRoundState;
 
 	OnGameRoundStateChanged.Broadcast(GameRoundState);
-}
-
-void ARPS_GameModeBase::StartMatch()
-{
-	PrintString(TEXT("Start Match"));
-
-	SetGameMatchState(ERPS_GameMatchState::Started);
-}
-
-void ARPS_GameModeBase::EndMatch()
-{
-	PrintString(TEXT("End Match"));
-
-	SetGameMatchState(ERPS_GameMatchState::Ended);
-
-	PrintPlayerStates();
 }
 
 void ARPS_GameModeBase::StartRound()

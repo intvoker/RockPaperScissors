@@ -58,6 +58,8 @@ void ARPS_PlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	                                                                   &ThisClass::SetSimulateHandPhysics, false);
 
 	PlayerInputComponent->BindAction("ResetHands", IE_Pressed, this, &ThisClass::ResetHands);
+
+	PlayerInputComponent->BindAction("StartMatch", IE_Pressed, this, &ThisClass::StartMatch);
 }
 
 FTransform ARPS_PlayerPawn::GetLeftHandRelativeTransform() const

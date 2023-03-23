@@ -4,6 +4,7 @@
 #include "Player/RPS_Pawn.h"
 
 #include "Hands/RPS_Hand.h"
+#include "RPS_GameModeBase.h"
 
 // Sets default values
 ARPS_Pawn::ARPS_Pawn()
@@ -85,4 +86,13 @@ void ARPS_Pawn::ResetHands()
 
 	LeftHand->SetSimulateHandPhysics(false);
 	RightHand->SetSimulateHandPhysics(false);
+}
+
+void ARPS_Pawn::StartMatch()
+{
+	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
+	if (!RPS_GameModeBase)
+		return;
+
+	RPS_GameModeBase->StartMatch();
 }

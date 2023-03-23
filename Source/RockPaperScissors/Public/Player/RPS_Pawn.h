@@ -63,4 +63,6 @@ protected:
 	void SetSimulateHandPhysics(bool bEnabled);
 
 	void ResetHands();
+
+	void StartMatch();
 };

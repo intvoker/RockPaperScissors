@@ -43,6 +43,9 @@ public:
 
 	virtual void StartPlay() override;
 
+	void StartMatch();
+	void EndMatch();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	TSubclassOf<ARPS_Pawn> AIPawnClass;
@@ -76,16 +79,15 @@ private:
 	ERPS_GameRoundState GameRoundState = ERPS_GameRoundState::None;
 
 	int32 CurrentRoundIndex = 0;
-	int32 CurrentRoundRemainingSeconds = 0;
+	int32 CurrentRoundRemainingSeconds = GameData.RoundTime;
 	FTimerHandle UpdateRoundTimerHandle;
+
+	void ResetCounters();
 
 	void SetupPawns();
 
 	void SetGameMatchState(ERPS_GameMatchState InGameMatchState);
 	void SetGameRoundState(ERPS_GameRoundState InGameRoundState);
-
-	void StartMatch();
-	void EndMatch();
 
 	void StartRound();
 	void UpdateRound();
