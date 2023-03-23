@@ -90,9 +90,8 @@ void ARPS_Pawn::ResetHands()
 
 void ARPS_Pawn::StartMatch()
 {
-	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
-	if (!RPS_GameModeBase)
-		return;
-
-	RPS_GameModeBase->StartMatch();
+	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
+	{
+		RPS_GameModeBase->StartMatch();
+	}
 }

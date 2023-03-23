@@ -90,9 +90,6 @@ void ARPS_GameModeBase::SetupPawns()
 
 void ARPS_GameModeBase::SetGameMatchState(ERPS_GameMatchState InGameMatchState)
 {
-	if (GameMatchState == InGameMatchState)
-		return;
-
 	GameMatchState = InGameMatchState;
 
 	OnGameMatchStateChanged.Broadcast(GameMatchState);
@@ -100,9 +97,6 @@ void ARPS_GameModeBase::SetGameMatchState(ERPS_GameMatchState InGameMatchState)
 
 void ARPS_GameModeBase::SetGameRoundState(ERPS_GameRoundState InGameRoundState)
 {
-	if (GameRoundState == InGameRoundState)
-		return;
-
 	GameRoundState = InGameRoundState;
 
 	OnGameRoundStateChanged.Broadcast(GameRoundState);
