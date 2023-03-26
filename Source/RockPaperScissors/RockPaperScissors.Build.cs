@@ -9,7 +9,7 @@ public class RockPaperScissors : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]
-			{ "Core", "CoreUObject", "Engine", "InputCore", "OculusInput" });
+			{ "Core", "CoreUObject", "Engine", "InputCore", "OculusInput", "SlateCore", "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "OculusHandPoseRecognition" });
 

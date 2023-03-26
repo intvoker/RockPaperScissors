@@ -10,6 +10,7 @@
 class ARPS_Hand;
 class ARPS_Pawn;
 class ARPS_PlayerState;
+class ARPS_WidgetActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameMatchStateChangedSignature, ERPS_GameMatchState, GameMatchState);
 
@@ -46,12 +47,20 @@ public:
 	void StartMatch();
 	void EndMatch();
 
+	ARPS_WidgetActor* GetWidgetActor() const { return WidgetActor; }
+
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	TSubclassOf<ARPS_WidgetActor> WidgetActorClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	float WidgetActorDistance = 500.0f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	TSubclassOf<ARPS_Pawn> AIPawnClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
-	float RivalPawnDistance = 100.0f;
+	float AIPawnDistance = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	int32 NumberOfPlayingPoses = 3;
@@ -73,6 +82,9 @@ protected:
 
 private:
 	UPROPERTY()
+	ARPS_WidgetActor* WidgetActor;
+
+	UPROPERTY()
 	ARPS_Pawn* AIPawn;
 
 	ERPS_GameMatchState GameMatchState = ERPS_GameMatchState::None;
@@ -93,7 +105,12 @@ private:
 	void UpdateRound();
 	void EndRound();
 
-	ARPS_Pawn* SpawnRivalPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> RivalPawnClass) const;
+	static FTransform GetSpawnTransform(const ARPS_Pawn* Pawn, float Distance);
+
+	ARPS_WidgetActor* SpawnWidgetActor(ARPS_Pawn* Pawn, TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const;
+
+	ARPS_Pawn* SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> InAIPawnClass) const;
+
 	static void ResetPawn(const ARPS_Pawn* Pawn);
 
 	ARPS_PlayerState* GetPlayerState() const;
