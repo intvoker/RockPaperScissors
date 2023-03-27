@@ -49,6 +49,10 @@ public:
 
 	ARPS_WidgetActor* GetWidgetActor() const { return WidgetActor; }
 
+	int32 GetCurrentRoundIndex() const { return CurrentRoundIndex; }
+	int32 GetNumberOfRounds() const { return GameData.NumberOfRounds; }
+	int32 GetCurrentRoundRemainingSeconds() const { return CurrentRoundRemainingSeconds; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	TSubclassOf<ARPS_WidgetActor> WidgetActorClass;

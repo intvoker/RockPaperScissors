@@ -30,8 +30,6 @@ void ARPS_GameModeBase::StartPlay()
 
 void ARPS_GameModeBase::StartMatch()
 {
-	PrintString(TEXT("Start Match"));
-
 	SetGameMatchState(ERPS_GameMatchState::Started);
 
 	ResetCounters();
@@ -41,8 +39,6 @@ void ARPS_GameModeBase::StartMatch()
 
 void ARPS_GameModeBase::EndMatch()
 {
-	PrintString(TEXT("End Match"));
-
 	SetGameMatchState(ERPS_GameMatchState::Ended);
 
 	ResetCounters();
@@ -64,6 +60,8 @@ void ARPS_GameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ARPS_GameModeBase::ResetCounters()
 {
+	GameRoundState = ERPS_GameRoundState::None;
+
 	CurrentRoundIndex = 0;
 	CurrentRoundRemainingSeconds = GameData.RoundTime;
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
@@ -115,8 +113,6 @@ void ARPS_GameModeBase::StartRound()
 	CurrentRoundIndex++;
 	CurrentRoundRemainingSeconds = GameData.RoundTime;
 
-	PrintString(FString::Printf(TEXT("Start Round: %d"), CurrentRoundIndex));
-
 	SetGameRoundState(ERPS_GameRoundState::Started);
 
 	GetWorld()->GetTimerManager().SetTimer(UpdateRoundTimerHandle, this, &ThisClass::UpdateRound, UpdateRoundTime,
@@ -127,10 +123,6 @@ void ARPS_GameModeBase::StartRound()
 
 void ARPS_GameModeBase::UpdateRound()
 {
-	PrintString(FString::Printf(
-		TEXT("Round: %d / %d. Remaining %d seconds."), CurrentRoundIndex, GameData.NumberOfRounds,
-		CurrentRoundRemainingSeconds));
-
 	CurrentRoundRemainingSeconds -= UpdateRoundTime;
 
 	if (CurrentRoundRemainingSeconds <= 0)
@@ -141,8 +133,6 @@ void ARPS_GameModeBase::UpdateRound()
 
 void ARPS_GameModeBase::EndRound()
 {
-	PrintString(FString::Printf(TEXT("End Round: %d"), CurrentRoundIndex));
-
 	SetGameRoundState(ERPS_GameRoundState::Ended);
 
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);

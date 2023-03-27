@@ -21,12 +21,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> GameMatchEndedWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> GameRoundStartedWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> GameRoundEndedWidgetClass;
+
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY()
 	TMap<ERPS_GameMatchState, UUserWidget*> GameMatchWidgets;
 
+	UPROPERTY()
+	TMap<ERPS_GameRoundState, UUserWidget*> GameRoundWidgets;
+
 	UFUNCTION()
 	void HandleOnGameMatchStateChanged(ERPS_GameMatchState GameMatchState);
+
+	UFUNCTION()
+	void HandleOnGameRoundStateChanged(ERPS_GameRoundState GameRoundState);
 };
