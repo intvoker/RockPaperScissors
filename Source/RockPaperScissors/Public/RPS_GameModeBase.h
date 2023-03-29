@@ -91,6 +91,9 @@ private:
 	UPROPERTY()
 	ARPS_Pawn* AIPawn;
 
+	UPROPERTY()
+	ARPS_Pawn* PlayerPawn;
+
 	ERPS_GameMatchState GameMatchState = ERPS_GameMatchState::None;
 	ERPS_GameRoundState GameRoundState = ERPS_GameRoundState::None;
 
@@ -100,6 +103,7 @@ private:
 
 	void ResetCounters();
 	void ResetPlayerStates() const;
+	void ResetAIPawn() const;
 
 	void SetupPawns();
 
@@ -116,8 +120,6 @@ private:
 
 	ARPS_Pawn* SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> InAIPawnClass) const;
 
-	static void ResetPawn(const ARPS_Pawn* Pawn);
-
 	ARPS_PlayerState* GetPlayerState() const;
 	ARPS_PlayerState* GetAIPlayerState() const;
 
@@ -131,7 +133,10 @@ private:
 
 	void SetHandPose(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName) const;
 
+	int32 GetRandomHandPoseIndex() const;
 	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
+
+	void Posed(int32 PoseIndex, int32 AIPoseIndex) const;
 
 	void PrintString(const FString& InString) const;
 	void PrintPlayerStates() const;
