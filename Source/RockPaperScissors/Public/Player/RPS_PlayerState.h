@@ -21,7 +21,13 @@ public:
 	int32 GetLosses() const { return Losses; }
 	void AddLoss() { Losses++; }
 
+	int32 GetTies() const { return Ties; }
+	void AddTie() { Ties++; }
+
+	virtual void Reset() override;
+
 private:
 	int32 Wins = 0;
 	int32 Losses = 0;
+	int32 Ties = 0;
 };

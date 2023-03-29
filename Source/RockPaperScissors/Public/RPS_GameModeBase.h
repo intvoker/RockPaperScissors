@@ -99,6 +99,7 @@ private:
 	FTimerHandle UpdateRoundTimerHandle;
 
 	void ResetCounters();
+	void ResetPlayerStates() const;
 
 	void SetupPawns();
 

@@ -33,6 +33,7 @@ void ARPS_GameModeBase::StartMatch()
 	SetGameMatchState(ERPS_GameMatchState::Started);
 
 	ResetCounters();
+	ResetPlayerStates();
 
 	ResetPawn(AIPawn);
 }
@@ -65,6 +66,18 @@ void ARPS_GameModeBase::ResetCounters()
 	CurrentRoundIndex = 0;
 	CurrentRoundRemainingSeconds = GameData.RoundTime;
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
+}
+
+void ARPS_GameModeBase::ResetPlayerStates() const
+{
+	if (const auto PlayerState = GetPlayerState())
+	{
+		PlayerState->Reset();
+	}
+	if (const auto AIPlayerState = GetAIPlayerState())
+	{
+		AIPlayerState->Reset();
+	}
 }
 
 void ARPS_GameModeBase::SetupPawns()
