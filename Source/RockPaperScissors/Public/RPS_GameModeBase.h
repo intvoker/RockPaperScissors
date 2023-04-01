@@ -47,6 +47,9 @@ public:
 	void StartMatch();
 	void EndMatch();
 
+	ARPS_PlayerState* GetPlayerState() const;
+	ARPS_PlayerState* GetAIPlayerState() const;
+
 	ARPS_WidgetActor* GetWidgetActor() const { return WidgetActor; }
 
 	int32 GetCurrentRoundIndex() const { return CurrentRoundIndex; }
@@ -119,9 +122,6 @@ private:
 	ARPS_WidgetActor* SpawnWidgetActor(ARPS_Pawn* Pawn, TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const;
 
 	ARPS_Pawn* SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> InAIPawnClass) const;
-
-	ARPS_PlayerState* GetPlayerState() const;
-	ARPS_PlayerState* GetAIPlayerState() const;
 
 	UFUNCTION()
 	void HandleOnLeftHandPoseRecognized(int32 PoseIndex, const FString& PoseName);

@@ -20,3 +20,12 @@ enum class ERPS_GameRoundState : uint8
 	Started,
 	Ended
 };
+
+UENUM(BlueprintType)
+enum class ERPS_GameRoundResult : uint8
+{
+	None = 0,
+	Win,
+	Loss,
+	Tie
+};

@@ -46,6 +46,22 @@ void ARPS_GameModeBase::EndMatch()
 	PrintPlayerStates();
 }
 
+ARPS_PlayerState* ARPS_GameModeBase::GetPlayerState() const
+{
+	if (!PlayerPawn)
+		return nullptr;
+
+	return PlayerPawn->GetPlayerState<ARPS_PlayerState>();
+}
+
+ARPS_PlayerState* ARPS_GameModeBase::GetAIPlayerState() const
+{
+	if (!AIPawn)
+		return nullptr;
+
+	return AIPawn->GetPlayerState<ARPS_PlayerState>();
+}
+
 void ARPS_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -139,6 +155,12 @@ void ARPS_GameModeBase::StartRound()
 	if (GameMatchState != ERPS_GameMatchState::Started)
 		return;
 
+	if (CurrentRoundIndex >= GameData.NumberOfRounds)
+	{
+		EndMatch();
+		return;
+	}
+
 	CurrentRoundIndex++;
 	CurrentRoundRemainingSeconds = GameData.RoundTime;
 
@@ -166,11 +188,6 @@ void ARPS_GameModeBase::EndRound()
 	SetGameRoundState(ERPS_GameRoundState::Ended);
 
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
-
-	if (CurrentRoundIndex >= GameData.NumberOfRounds)
-	{
-		EndMatch();
-	}
 }
 
 FTransform ARPS_GameModeBase::GetSpawnTransform(const ARPS_Pawn* Pawn, const float Distance)
@@ -212,22 +229,6 @@ ARPS_Pawn* ARPS_GameModeBase::SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn
 	}
 
 	return nullptr;
-}
-
-ARPS_PlayerState* ARPS_GameModeBase::GetPlayerState() const
-{
-	if (!PlayerPawn)
-		return nullptr;
-
-	return PlayerPawn->GetPlayerState<ARPS_PlayerState>();
-}
-
-ARPS_PlayerState* ARPS_GameModeBase::GetAIPlayerState() const
-{
-	if (!AIPawn)
-		return nullptr;
-
-	return AIPawn->GetPlayerState<ARPS_PlayerState>();
 }
 
 void ARPS_GameModeBase::HandleOnLeftHandPoseRecognized(int32 PoseIndex, const FString& PoseName)
@@ -313,18 +314,18 @@ void ARPS_GameModeBase::Posed(int32 PoseIndex, int32 AIPoseIndex) const
 
 	if (PoseIndex == AIPoseIndex)
 	{
-		PlayerState->AddTie();
-		AIPlayerState->AddTie();
+		PlayerState->AddTie(CurrentRoundIndex);
+		AIPlayerState->AddTie(CurrentRoundIndex);
 	}
 	else if (PoseIndex == GetWinHandPoseIndex(AIPoseIndex))
 	{
-		PlayerState->AddWin();
-		AIPlayerState->AddLoss();
+		PlayerState->AddWin(CurrentRoundIndex);
+		AIPlayerState->AddLoss(CurrentRoundIndex);
 	}
 	else if (AIPoseIndex == GetWinHandPoseIndex(PoseIndex))
 	{
-		PlayerState->AddLoss();
-		AIPlayerState->AddWin();
+		PlayerState->AddLoss(CurrentRoundIndex);
+		AIPlayerState->AddWin(CurrentRoundIndex);
 	}
 }
 
