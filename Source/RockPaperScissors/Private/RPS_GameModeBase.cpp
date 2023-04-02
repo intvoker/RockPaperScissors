@@ -100,14 +100,7 @@ void ARPS_GameModeBase::ResetAIPawn() const
 	if (!AIPawn)
 		return;
 
-	if (const auto LeftHand = AIPawn->GetLeftHand())
-	{
-		LeftHand->ClearHandPose();
-	}
-	if (const auto RightHand = AIPawn->GetRightHand())
-	{
-		RightHand->ClearHandPose();
-	}
+	AIPawn->ResetHands();
 }
 
 void ARPS_GameModeBase::SetupPawns()
