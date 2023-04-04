@@ -11,9 +11,12 @@ FText URPS_GameRoundStartedWidget::GetRoundInfo()
 	if (!RPS_GameModeBase)
 		return FText::GetEmpty();
 
-	const auto RoundInfo = FString::Printf(
-		TEXT("Round: %d / %d. Remaining %d seconds."), RPS_GameModeBase->GetCurrentRoundIndex(),
-		RPS_GameModeBase->GetNumberOfRounds(), RPS_GameModeBase->GetCurrentRoundRemainingSeconds());
+	const auto RoundNumber = FString::Printf(TEXT("Round: %d / %d."), RPS_GameModeBase->GetCurrentRoundIndex(),
+	                                         RPS_GameModeBase->GetNumberOfRounds());
+	const auto RoundRemainingSeconds = FString::Printf(
+		TEXT("Remaining %d seconds."), RPS_GameModeBase->GetCurrentRoundRemainingSeconds());
+
+	const auto RoundInfo = FString::Printf(TEXT("%s%s%s"), *RoundNumber, LINE_TERMINATOR, *RoundRemainingSeconds);
 
 	return FText::FromString(RoundInfo);
 }

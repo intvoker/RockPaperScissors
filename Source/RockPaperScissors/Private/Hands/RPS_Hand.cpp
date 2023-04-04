@@ -109,14 +109,22 @@ FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
 	return NAME_None;
 }
 
+FString ARPS_Hand::GetHandPoseName(int32 PoseIndex) const
+{
+	const auto Pose = GetHandPose(PoseIndex);
+	if (!Pose)
+		return DefaultHandPoseName;
+
+	return Pose->PoseName;
+}
+
 void ARPS_Hand::SetHandPose(int32 PoseIndex)
 {
-	if (PoseIndex < 0 || PoseIndex >= HandPoseRecognizer->Poses.Num())
+	const auto Pose = GetHandPose(PoseIndex);
+	if (!Pose)
 		return;
 
-	const auto Pose = HandPoseRecognizer->Poses[PoseIndex];
-
-	SetHandPose(Pose.CustomEncodedPose);
+	SetHandPose(Pose->CustomEncodedPose);
 }
 
 void ARPS_Hand::SetHandPose(const FString& PoseString)
@@ -240,4 +248,12 @@ void ARPS_Hand::PostSetHandType(EOculusHandType InHandType) const
 	PoseableHandComponent->SkeletonType = InHandType;
 	PoseableHandComponent->MeshType = InHandType;
 	HandPoseRecognizer->Side = InHandType;
+}
+
+FHandPose* ARPS_Hand::GetHandPose(int32 PoseIndex) const
+{
+	if (PoseIndex < 0 || PoseIndex >= HandPoseRecognizer->Poses.Num())
+		return nullptr;
+
+	return &HandPoseRecognizer->Poses[PoseIndex];
 }

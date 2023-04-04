@@ -9,6 +9,7 @@
 
 class UHandPoseRecognizer;
 class UPoseableHandComponent;
+struct FHandPose;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHandPoseRecognizedSignature, int32, PoseIndex, const FString&, PoseName);
 
@@ -46,6 +47,7 @@ public:
 	void PrintHandPose(EOculusHandType Side, const FString& Name) const;
 	static FName HandNameFromType(EOculusHandType HandType);
 
+	FString GetHandPoseName(int32 PoseIndex) const;
 	void SetHandPose(int32 PoseIndex);
 	void SetHandPose(const FString& PoseString);
 	void ClearHandPose();
@@ -82,6 +84,8 @@ protected:
 	void RecognizeHandPose();
 
 	void PostSetHandType(EOculusHandType InHandType) const;
+
+	FHandPose* GetHandPose(int32 PoseIndex) const;
 
 private:
 	bool bHasOwner = false;

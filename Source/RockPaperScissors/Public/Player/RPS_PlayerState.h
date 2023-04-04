@@ -17,21 +17,21 @@ class ROCKPAPERSCISSORS_API ARPS_PlayerState : public APlayerState
 
 public:
 	int32 GetWins() const;
-	void AddWin(int32 RoundIndex);
+	void AddWin(int32 RoundIndex, int32 PoseIndex);
 
 	int32 GetLosses() const;
-	void AddLoss(int32 RoundIndex);
+	void AddLoss(int32 RoundIndex, int32 PoseIndex);
 
 	int32 GetTies() const;
-	void AddTie(int32 RoundIndex);
+	void AddTie(int32 RoundIndex, int32 PoseIndex);
 
-	void AddResult(int32 RoundIndex, ERPS_GameRoundResult Result);
-	ERPS_GameRoundResult GetResult(int32 RoundIndex);
+	void AddResult(int32 RoundIndex, int32 PoseIndex, ERPS_GameRoundResult GameRoundResult);
+	TPair<int32, ERPS_GameRoundResult> GetResult(int32 RoundIndex);
 
 	virtual void Reset() override;
 
 private:
-	TMap<int32, ERPS_GameRoundResult> Results;
+	TMap<int32, TPair<int32, ERPS_GameRoundResult>> Results;
 
-	int32 NumByResult(ERPS_GameRoundResult Result) const;
+	int32 NumByResult(ERPS_GameRoundResult GameRoundResult) const;
 };

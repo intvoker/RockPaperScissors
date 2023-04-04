@@ -62,6 +62,18 @@ ARPS_PlayerState* ARPS_GameModeBase::GetAIPlayerState() const
 	return AIPawn->GetPlayerState<ARPS_PlayerState>();
 }
 
+FString ARPS_GameModeBase::GetHandPoseName(int32 PoseIndex) const
+{
+	if (!PlayerPawn)
+		return ARPS_Hand::DefaultHandPoseName;
+
+	const auto LeftHand = PlayerPawn->GetLeftHand();
+	if (!LeftHand)
+		return ARPS_Hand::DefaultHandPoseName;
+
+	return LeftHand->GetHandPoseName(PoseIndex);
+}
+
 void ARPS_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -307,18 +319,18 @@ void ARPS_GameModeBase::Posed(int32 PoseIndex, int32 AIPoseIndex) const
 
 	if (PoseIndex == AIPoseIndex)
 	{
-		PlayerState->AddTie(CurrentRoundIndex);
-		AIPlayerState->AddTie(CurrentRoundIndex);
+		PlayerState->AddTie(CurrentRoundIndex, PoseIndex);
+		AIPlayerState->AddTie(CurrentRoundIndex, AIPoseIndex);
 	}
 	else if (PoseIndex == GetWinHandPoseIndex(AIPoseIndex))
 	{
-		PlayerState->AddWin(CurrentRoundIndex);
-		AIPlayerState->AddLoss(CurrentRoundIndex);
+		PlayerState->AddWin(CurrentRoundIndex, PoseIndex);
+		AIPlayerState->AddLoss(CurrentRoundIndex, AIPoseIndex);
 	}
 	else if (AIPoseIndex == GetWinHandPoseIndex(PoseIndex))
 	{
-		PlayerState->AddLoss(CurrentRoundIndex);
-		AIPlayerState->AddWin(CurrentRoundIndex);
+		PlayerState->AddLoss(CurrentRoundIndex, PoseIndex);
+		AIPlayerState->AddWin(CurrentRoundIndex, AIPoseIndex);
 	}
 }
 
@@ -329,16 +341,16 @@ void ARPS_GameModeBase::PrintString(const FString& InString) const
 
 void ARPS_GameModeBase::PrintPlayerStates() const
 {
-	if (const auto PlayerState = GetPlayerState())
+	if (const auto RPS_PlayerState = GetPlayerState())
 	{
-		PrintString(FString::Printf(TEXT("Player Wins: %d"), PlayerState->GetWins()));
-		PrintString(FString::Printf(TEXT("Player Losses: %d"), PlayerState->GetLosses()));
-		PrintString(FString::Printf(TEXT("Player Ties: %d"), PlayerState->GetTies()));
+		PrintString(FString::Printf(TEXT("Player Wins: %d"), RPS_PlayerState->GetWins()));
+		PrintString(FString::Printf(TEXT("Player Losses: %d"), RPS_PlayerState->GetLosses()));
+		PrintString(FString::Printf(TEXT("Player Ties: %d"), RPS_PlayerState->GetTies()));
 	}
-	if (const auto AIPlayerState = GetAIPlayerState())
+	if (const auto RPS_AIPlayerState = GetAIPlayerState())
 	{
-		PrintString(FString::Printf(TEXT("AI Player Wins: %d"), AIPlayerState->GetWins()));
-		PrintString(FString::Printf(TEXT("AI Player Losses: %d"), AIPlayerState->GetLosses()));
-		PrintString(FString::Printf(TEXT("AI Player Ties: %d"), AIPlayerState->GetTies()));
+		PrintString(FString::Printf(TEXT("AI Player Wins: %d"), RPS_AIPlayerState->GetWins()));
+		PrintString(FString::Printf(TEXT("AI Player Losses: %d"), RPS_AIPlayerState->GetLosses()));
+		PrintString(FString::Printf(TEXT("AI Player Ties: %d"), RPS_AIPlayerState->GetTies()));
 	}
 }

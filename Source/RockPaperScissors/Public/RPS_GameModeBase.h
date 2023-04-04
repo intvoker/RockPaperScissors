@@ -56,6 +56,8 @@ public:
 	int32 GetNumberOfRounds() const { return GameData.NumberOfRounds; }
 	int32 GetCurrentRoundRemainingSeconds() const { return CurrentRoundRemainingSeconds; }
 
+	FString GetHandPoseName(int32 PoseIndex) const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	TSubclassOf<ARPS_WidgetActor> WidgetActorClass;
