@@ -8,45 +8,45 @@
 
 int32 ARPS_PlayerState::GetWins() const
 {
-	return NumByResult(ERPS_GameRoundResult::Win);
+	return NumByRoundResult(ERPS_GameRoundResult::Win);
 }
 
 void ARPS_PlayerState::AddWin(int32 RoundIndex, int32 PoseIndex)
 {
-	AddResult(RoundIndex, PoseIndex, ERPS_GameRoundResult::Win);
+	AddRoundResult(RoundIndex, PoseIndex, ERPS_GameRoundResult::Win);
 }
 
 int32 ARPS_PlayerState::GetLosses() const
 {
-	return NumByResult(ERPS_GameRoundResult::Loss);
+	return NumByRoundResult(ERPS_GameRoundResult::Loss);
 }
 
 void ARPS_PlayerState::AddLoss(int32 RoundIndex, int32 PoseIndex)
 {
-	AddResult(RoundIndex, PoseIndex, ERPS_GameRoundResult::Loss);
+	AddRoundResult(RoundIndex, PoseIndex, ERPS_GameRoundResult::Loss);
 }
 
 int32 ARPS_PlayerState::GetTies() const
 {
-	return NumByResult(ERPS_GameRoundResult::Tie);
+	return NumByRoundResult(ERPS_GameRoundResult::Tie);
 }
 
 void ARPS_PlayerState::AddTie(int32 RoundIndex, int32 PoseIndex)
 {
-	AddResult(RoundIndex, PoseIndex, ERPS_GameRoundResult::Tie);
+	AddRoundResult(RoundIndex, PoseIndex, ERPS_GameRoundResult::Tie);
 }
 
-void ARPS_PlayerState::AddResult(int32 RoundIndex, int32 PoseIndex, ERPS_GameRoundResult GameRoundResult)
+void ARPS_PlayerState::AddRoundResult(int32 RoundIndex, int32 PoseIndex, ERPS_GameRoundResult GameRoundResult)
 {
-	Results.Add(RoundIndex, TPair<int32, ERPS_GameRoundResult>(PoseIndex, GameRoundResult));
+	RoundResults.Add(RoundIndex, TPair<int32, ERPS_GameRoundResult>(PoseIndex, GameRoundResult));
 }
 
-TPair<int32, ERPS_GameRoundResult> ARPS_PlayerState::GetResult(int32 RoundIndex)
+TPair<int32, ERPS_GameRoundResult> ARPS_PlayerState::GetRoundResult(int32 RoundIndex)
 {
-	const auto Result = Results.Find(RoundIndex);
+	const auto RoundResult = RoundResults.Find(RoundIndex);
 
-	return Result
-		? *Result
+	return RoundResult
+		? *RoundResult
 		: TPair<int32, ERPS_GameRoundResult>(ARPS_Hand::DefaultHandPoseIndex, ERPS_GameRoundResult::None);
 }
 
@@ -54,16 +54,16 @@ void ARPS_PlayerState::Reset()
 {
 	Super::Reset();
 
-	Results.Empty();
+	RoundResults.Empty();
 }
 
-int32 ARPS_PlayerState::NumByResult(ERPS_GameRoundResult GameRoundResult) const
+int32 ARPS_PlayerState::NumByRoundResult(ERPS_GameRoundResult GameRoundResult) const
 {
-	const auto FoundResults = Results.FilterByPredicate(
+	const auto FoundRoundResults = RoundResults.FilterByPredicate(
 		[GameRoundResult](const TPair<int32, TPair<int32, ERPS_GameRoundResult>>& Pair)
 		{
 			return Pair.Value.Value == GameRoundResult;
 		});
 
-	return FoundResults.Num();
+	return FoundRoundResults.Num();
 }

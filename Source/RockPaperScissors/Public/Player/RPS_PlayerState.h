@@ -25,13 +25,13 @@ public:
 	int32 GetTies() const;
 	void AddTie(int32 RoundIndex, int32 PoseIndex);
 
-	void AddResult(int32 RoundIndex, int32 PoseIndex, ERPS_GameRoundResult GameRoundResult);
-	TPair<int32, ERPS_GameRoundResult> GetResult(int32 RoundIndex);
+	void AddRoundResult(int32 RoundIndex, int32 PoseIndex, ERPS_GameRoundResult GameRoundResult);
+	TPair<int32, ERPS_GameRoundResult> GetRoundResult(int32 RoundIndex);
 
 	virtual void Reset() override;
 
 private:
-	TMap<int32, TPair<int32, ERPS_GameRoundResult>> Results;
+	TMap<int32, TPair<int32, ERPS_GameRoundResult>> RoundResults;
 
-	int32 NumByResult(ERPS_GameRoundResult GameRoundResult) const;
+	int32 NumByRoundResult(ERPS_GameRoundResult GameRoundResult) const;
 };

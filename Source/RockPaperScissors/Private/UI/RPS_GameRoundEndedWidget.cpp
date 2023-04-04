@@ -6,7 +6,7 @@
 #include "RPS_GameModeBase.h"
 #include "Player/RPS_PlayerState.h"
 
-FText URPS_GameRoundEndedWidget::GetResultInfo()
+FText URPS_GameRoundEndedWidget::GetRoundResultInfo()
 {
 	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
 	if (!RPS_GameModeBase)
@@ -20,22 +20,22 @@ FText URPS_GameRoundEndedWidget::GetResultInfo()
 	if (!RPS_AIPlayerState)
 		return FText::GetEmpty();
 
-	const auto PlayerResult = RPS_PlayerState->GetResult(RPS_GameModeBase->GetCurrentRoundIndex());
-	const auto PlayerGameRoundResult = UEnum::GetDisplayValueAsText(PlayerResult.Value).ToString();
+	const auto PlayerRoundResult = RPS_PlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
+	const auto PlayerGameRoundResult = UEnum::GetDisplayValueAsText(PlayerRoundResult.Value).ToString();
 
-	const auto PlayerResultInfo = FString::Printf(
-		TEXT("Player pose: %s. Result: %s."), *RPS_GameModeBase->GetHandPoseName(PlayerResult.Key),
+	const auto PlayerRoundResultInfo = FString::Printf(
+		TEXT("Player pose: %s. Round result: %s."), *RPS_GameModeBase->GetHandPoseName(PlayerRoundResult.Key),
 		*PlayerGameRoundResult);
 
-	const auto AIPPlayerResult = RPS_AIPlayerState->GetResult(RPS_GameModeBase->GetCurrentRoundIndex());
-	const auto AIPlayerGameRoundResult = UEnum::GetDisplayValueAsText(AIPPlayerResult.Value).ToString();
+	const auto AIPPlayerRoundResult = RPS_AIPlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
+	const auto AIPlayerGameRoundResult = UEnum::GetDisplayValueAsText(AIPPlayerRoundResult.Value).ToString();
 
-	const auto AIPlayerResultInfo = FString::Printf(
-		TEXT("AI Player pose: %s. Result: %s."), *RPS_GameModeBase->GetHandPoseName(AIPPlayerResult.Key),
+	const auto AIPlayerRoundResultInfo = FString::Printf(
+		TEXT("AI Player pose: %s. Round result: %s."), *RPS_GameModeBase->GetHandPoseName(AIPPlayerRoundResult.Key),
 		*AIPlayerGameRoundResult);
 
-	const auto ResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameRoundResult, LINE_TERMINATOR,
-	                                        *PlayerResultInfo, LINE_TERMINATOR, *AIPlayerResultInfo);
+	const auto RoundResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameRoundResult, LINE_TERMINATOR,
+	                                             *PlayerRoundResultInfo, LINE_TERMINATOR, *AIPlayerRoundResultInfo);
 
-	return FText::FromString(ResultInfo);
+	return FText::FromString(RoundResultInfo);
 }

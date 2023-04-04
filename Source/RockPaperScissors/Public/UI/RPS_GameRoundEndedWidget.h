@@ -16,5 +16,5 @@ class ROCKPAPERSCISSORS_API URPS_GameRoundEndedWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	FText GetResultInfo();
+	FText GetRoundResultInfo();
 };
