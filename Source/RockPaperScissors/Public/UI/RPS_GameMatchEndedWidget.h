@@ -14,4 +14,7 @@ class ROCKPAPERSCISSORS_API URPS_GameMatchEndedWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	FText GetMatchResultInfo();
 };

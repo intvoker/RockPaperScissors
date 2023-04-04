@@ -3,8 +3,8 @@
 
 #include "UI/RPS_GameRoundEndedWidget.h"
 
-#include "RPS_GameModeBase.h"
 #include "Player/RPS_PlayerState.h"
+#include "RPS_GameModeBase.h"
 
 FText URPS_GameRoundEndedWidget::GetRoundResultInfo()
 {
@@ -24,14 +24,14 @@ FText URPS_GameRoundEndedWidget::GetRoundResultInfo()
 	const auto PlayerGameRoundResult = UEnum::GetDisplayValueAsText(PlayerRoundResult.Value).ToString();
 
 	const auto PlayerRoundResultInfo = FString::Printf(
-		TEXT("Player pose: %s. Round result: %s."), *RPS_GameModeBase->GetHandPoseName(PlayerRoundResult.Key),
+		TEXT("Player Pose: %s. Round result: %s."), *RPS_GameModeBase->GetHandPoseName(PlayerRoundResult.Key),
 		*PlayerGameRoundResult);
 
 	const auto AIPPlayerRoundResult = RPS_AIPlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
 	const auto AIPlayerGameRoundResult = UEnum::GetDisplayValueAsText(AIPPlayerRoundResult.Value).ToString();
 
 	const auto AIPlayerRoundResultInfo = FString::Printf(
-		TEXT("AI Player pose: %s. Round result: %s."), *RPS_GameModeBase->GetHandPoseName(AIPPlayerRoundResult.Key),
+		TEXT("AI Player Pose: %s. Round result: %s."), *RPS_GameModeBase->GetHandPoseName(AIPPlayerRoundResult.Key),
 		*AIPlayerGameRoundResult);
 
 	const auto RoundResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameRoundResult, LINE_TERMINATOR,

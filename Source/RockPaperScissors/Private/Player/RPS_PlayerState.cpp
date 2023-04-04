@@ -6,6 +6,16 @@
 #include "Hands/RPS_Hand.h"
 #include "RPS_Types.h"
 
+void ARPS_PlayerState::SetMatchResult(ERPS_GameMatchResult GameMatchResult)
+{
+	MatchResult = GameMatchResult;
+}
+
+ERPS_GameMatchResult ARPS_PlayerState::GetMatchResult() const
+{
+	return MatchResult;
+}
+
 int32 ARPS_PlayerState::GetWins() const
 {
 	return NumByRoundResult(ERPS_GameRoundResult::Win);
@@ -53,6 +63,8 @@ TPair<int32, ERPS_GameRoundResult> ARPS_PlayerState::GetRoundResult(int32 RoundI
 void ARPS_PlayerState::Reset()
 {
 	Super::Reset();
+
+	MatchResult = ERPS_GameMatchResult::None;
 
 	RoundResults.Empty();
 }

@@ -4,7 +4,6 @@
 #include "RPS_GameModeBase.h"
 
 #include "Hands/RPS_Hand.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Player/RPS_PlayerController.h"
 #include "Player/RPS_PlayerPawn.h"
 #include "Player/RPS_PlayerState.h"
@@ -39,11 +38,11 @@ void ARPS_GameModeBase::StartMatch()
 
 void ARPS_GameModeBase::EndMatch()
 {
+	Finished();
+
 	SetGameMatchState(ERPS_GameMatchState::Ended);
 
 	ResetCounters();
-
-	PrintPlayerStates();
 }
 
 ARPS_PlayerState* ARPS_GameModeBase::GetPlayerState() const
@@ -334,23 +333,27 @@ void ARPS_GameModeBase::Posed(int32 PoseIndex, int32 AIPoseIndex) const
 	}
 }
 
-void ARPS_GameModeBase::PrintString(const FString& InString) const
+void ARPS_GameModeBase::Finished() const
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), InString, true, true, FLinearColor::Green, 5.0);
-}
+	const auto PlayerState = GetPlayerState();
+	const auto AIPlayerState = GetAIPlayerState();
 
-void ARPS_GameModeBase::PrintPlayerStates() const
-{
-	if (const auto RPS_PlayerState = GetPlayerState())
+	if (!PlayerState || !AIPlayerState)
+		return;
+
+	if (PlayerState->GetWins() == AIPlayerState->GetWins())
 	{
-		PrintString(FString::Printf(TEXT("Player Wins: %d"), RPS_PlayerState->GetWins()));
-		PrintString(FString::Printf(TEXT("Player Losses: %d"), RPS_PlayerState->GetLosses()));
-		PrintString(FString::Printf(TEXT("Player Ties: %d"), RPS_PlayerState->GetTies()));
+		PlayerState->SetMatchResult(ERPS_GameMatchResult::Tie);
+		AIPlayerState->SetMatchResult(ERPS_GameMatchResult::Tie);
 	}
-	if (const auto RPS_AIPlayerState = GetAIPlayerState())
+	else if (PlayerState->GetWins() > AIPlayerState->GetWins())
 	{
-		PrintString(FString::Printf(TEXT("AI Player Wins: %d"), RPS_AIPlayerState->GetWins()));
-		PrintString(FString::Printf(TEXT("AI Player Losses: %d"), RPS_AIPlayerState->GetLosses()));
-		PrintString(FString::Printf(TEXT("AI Player Ties: %d"), RPS_AIPlayerState->GetTies()));
+		PlayerState->SetMatchResult(ERPS_GameMatchResult::Win);
+		AIPlayerState->SetMatchResult(ERPS_GameMatchResult::Loss);
+	}
+	else if (AIPlayerState->GetWins() > PlayerState->GetWins())
+	{
+		PlayerState->SetMatchResult(ERPS_GameMatchResult::Loss);
+		AIPlayerState->SetMatchResult(ERPS_GameMatchResult::Win);
 	}
 }

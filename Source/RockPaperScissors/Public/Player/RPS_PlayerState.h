@@ -16,6 +16,9 @@ class ROCKPAPERSCISSORS_API ARPS_PlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+	void SetMatchResult(ERPS_GameMatchResult GameMatchResult);
+	ERPS_GameMatchResult GetMatchResult() const;
+
 	int32 GetWins() const;
 	void AddWin(int32 RoundIndex, int32 PoseIndex);
 
@@ -31,6 +34,8 @@ public:
 	virtual void Reset() override;
 
 private:
+	ERPS_GameMatchResult MatchResult;
+
 	TMap<int32, TPair<int32, ERPS_GameRoundResult>> RoundResults;
 
 	int32 NumByRoundResult(ERPS_GameRoundResult GameRoundResult) const;

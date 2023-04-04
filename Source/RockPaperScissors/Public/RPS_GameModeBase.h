@@ -140,6 +140,5 @@ private:
 
 	void Posed(int32 PoseIndex, int32 AIPoseIndex) const;
 
-	void PrintString(const FString& InString) const;
-	void PrintPlayerStates() const;
+	void Finished() const;
 };
