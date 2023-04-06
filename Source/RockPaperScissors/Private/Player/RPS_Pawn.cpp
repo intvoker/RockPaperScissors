@@ -32,6 +32,15 @@ FTransform ARPS_Pawn::GetRightHandRelativeTransform() const
 	return RightChildActorComponent->GetRelativeTransform();
 }
 
+void ARPS_Pawn::EnablePhysicsHands() const
+{
+	LeftHand->ClearHandPose();
+	LeftHand->SetSimulateHandPhysics(true);
+
+	RightHand->ClearHandPose();
+	RightHand->SetSimulateHandPhysics(true);
+}
+
 void ARPS_Pawn::ResetHands()
 {
 	ActiveHand = nullptr;

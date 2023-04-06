@@ -34,12 +34,13 @@ void ARPS_GameModeBase::StartMatch()
 
 	ResetCounters();
 	ResetPlayerStates();
-	ResetAIPawn();
+	ResetPawns();
 }
 
 void ARPS_GameModeBase::EndMatch()
 {
 	Finished();
+	Award();
 
 	SetGameMatchState(ERPS_GameMatchState::Ended);
 
@@ -107,12 +108,16 @@ void ARPS_GameModeBase::ResetPlayerStates() const
 	}
 }
 
-void ARPS_GameModeBase::ResetAIPawn() const
+void ARPS_GameModeBase::ResetPawns() const
 {
-	if (!AIPawn)
-		return;
-
-	AIPawn->ResetHands();
+	if (PlayerPawn)
+	{
+		PlayerPawn->ResetHands();
+	}
+	if (AIPawn)
+	{
+		AIPawn->ResetHands();
+	}
 }
 
 void ARPS_GameModeBase::SetupPawns()
@@ -186,7 +191,7 @@ void ARPS_GameModeBase::StartRound()
 	GetWorld()->GetTimerManager().SetTimer(UpdateRoundTimerHandle, this, &ThisClass::UpdateRound, UpdateRoundTime,
 	                                       true);
 
-	ResetAIPawn();
+	ResetPawns();
 }
 
 void ARPS_GameModeBase::UpdateRound()
@@ -368,5 +373,24 @@ void ARPS_GameModeBase::Finished() const
 	{
 		PlayerState->SetMatchResult(ERPS_GameMatchResult::Loss);
 		AIPlayerState->SetMatchResult(ERPS_GameMatchResult::Win);
+	}
+}
+
+void ARPS_GameModeBase::Award() const
+{
+	const auto PlayerState = GetPlayerState();
+	const auto AIPlayerState = GetAIPlayerState();
+
+	if (!PlayerState || !AIPlayerState)
+		return;
+
+	if (PlayerState->GetMatchResult() != ERPS_GameMatchResult::Win)
+	{
+		PlayerPawn->EnablePhysicsHands();
+	}
+
+	if (AIPlayerState->GetMatchResult() != ERPS_GameMatchResult::Win)
+	{
+		AIPawn->EnablePhysicsHands();
 	}
 }

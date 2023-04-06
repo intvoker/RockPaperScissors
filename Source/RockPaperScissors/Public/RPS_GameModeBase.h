@@ -108,7 +108,7 @@ private:
 
 	void ResetCounters();
 	void ResetPlayerStates() const;
-	void ResetAIPawn() const;
+	void ResetPawns() const;
 
 	void SetupPawns();
 	void SetPlayerNames() const;
@@ -142,4 +142,6 @@ private:
 	void Posed(int32 PoseIndex, int32 AIPoseIndex) const;
 
 	void Finished() const;
+
+	void Award() const;
 };

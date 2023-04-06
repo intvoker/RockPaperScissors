@@ -23,6 +23,7 @@ public:
 	FTransform virtual GetLeftHandRelativeTransform() const;
 	FTransform virtual GetRightHandRelativeTransform() const;
 
+	void EnablePhysicsHands() const;
 	void ResetHands();
 
 	void SetRivalPawn(ARPS_Pawn* InRivalPawn) { RivalPawn = InRivalPawn; }
