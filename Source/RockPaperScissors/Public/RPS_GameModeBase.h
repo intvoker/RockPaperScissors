@@ -111,6 +111,7 @@ private:
 	void ResetAIPawn() const;
 
 	void SetupPawns();
+	void SetPlayerNames() const;
 
 	void SetGameMatchState(ERPS_GameMatchState InGameMatchState);
 	void SetGameRoundState(ERPS_GameRoundState InGameRoundState);
@@ -121,7 +122,7 @@ private:
 
 	static FTransform GetSpawnTransform(const ARPS_Pawn* Pawn, float Distance);
 
-	ARPS_WidgetActor* SpawnWidgetActor(ARPS_Pawn* Pawn, TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const;
+	ARPS_WidgetActor* SpawnWidgetActor(const ARPS_Pawn* Pawn, TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const;
 
 	ARPS_Pawn* SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> InAIPawnClass) const;
 

@@ -23,6 +23,7 @@ void ARPS_GameModeBase::StartPlay()
 	Super::StartPlay();
 
 	SetupPawns();
+	SetPlayerNames();
 
 	StartMatch();
 }
@@ -140,6 +141,18 @@ void ARPS_GameModeBase::SetupPawns()
 	PlayerPawn = Pawn;
 }
 
+void ARPS_GameModeBase::SetPlayerNames() const
+{
+	if (const auto PlayerState = GetPlayerState())
+	{
+		PlayerState->SetPlayerName(TEXT("Player"));
+	}
+	if (const auto AIPlayerState = GetAIPlayerState())
+	{
+		AIPlayerState->SetPlayerName(TEXT("AI Player"));
+	}
+}
+
 void ARPS_GameModeBase::SetGameMatchState(ERPS_GameMatchState InGameMatchState)
 {
 	GameMatchState = InGameMatchState;
@@ -205,7 +218,7 @@ FTransform ARPS_GameModeBase::GetSpawnTransform(const ARPS_Pawn* Pawn, const flo
 	return FTransform(Rotation, Location);
 }
 
-ARPS_WidgetActor* ARPS_GameModeBase::SpawnWidgetActor(ARPS_Pawn* Pawn,
+ARPS_WidgetActor* ARPS_GameModeBase::SpawnWidgetActor(const ARPS_Pawn* Pawn,
                                                       TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const
 {
 	const auto Transform = GetSpawnTransform(Pawn, WidgetActorDistance);
@@ -326,7 +339,7 @@ void ARPS_GameModeBase::Posed(int32 PoseIndex, int32 AIPoseIndex) const
 		PlayerState->AddWin(CurrentRoundIndex, PoseIndex);
 		AIPlayerState->AddLoss(CurrentRoundIndex, AIPoseIndex);
 	}
-	else if (AIPoseIndex == GetWinHandPoseIndex(PoseIndex))
+	else
 	{
 		PlayerState->AddLoss(CurrentRoundIndex, PoseIndex);
 		AIPlayerState->AddWin(CurrentRoundIndex, AIPoseIndex);
@@ -351,7 +364,7 @@ void ARPS_GameModeBase::Finished() const
 		PlayerState->SetMatchResult(ERPS_GameMatchResult::Win);
 		AIPlayerState->SetMatchResult(ERPS_GameMatchResult::Loss);
 	}
-	else if (AIPlayerState->GetWins() > PlayerState->GetWins())
+	else
 	{
 		PlayerState->SetMatchResult(ERPS_GameMatchResult::Loss);
 		AIPlayerState->SetMatchResult(ERPS_GameMatchResult::Win);

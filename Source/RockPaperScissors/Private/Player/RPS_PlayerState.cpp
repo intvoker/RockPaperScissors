@@ -51,7 +51,7 @@ void ARPS_PlayerState::AddRoundResult(int32 RoundIndex, int32 PoseIndex, ERPS_Ga
 	RoundResults.Add(RoundIndex, TPair<int32, ERPS_GameRoundResult>(PoseIndex, GameRoundResult));
 }
 
-TPair<int32, ERPS_GameRoundResult> ARPS_PlayerState::GetRoundResult(int32 RoundIndex)
+TPair<int32, ERPS_GameRoundResult> ARPS_PlayerState::GetRoundResult(int32 RoundIndex) const
 {
 	const auto RoundResult = RoundResults.Find(RoundIndex);
 

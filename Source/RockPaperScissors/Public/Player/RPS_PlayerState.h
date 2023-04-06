@@ -29,7 +29,7 @@ public:
 	void AddTie(int32 RoundIndex, int32 PoseIndex);
 
 	void AddRoundResult(int32 RoundIndex, int32 PoseIndex, ERPS_GameRoundResult GameRoundResult);
-	TPair<int32, ERPS_GameRoundResult> GetRoundResult(int32 RoundIndex);
+	TPair<int32, ERPS_GameRoundResult> GetRoundResult(int32 RoundIndex) const;
 
 	virtual void Reset() override;
 
