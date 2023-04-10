@@ -30,12 +30,10 @@ void ARPS_HUD::BeginPlay()
 
 void ARPS_HUD::HandleOnGameMatchStateChanged(ERPS_GameMatchState GameMatchState)
 {
-	UUserWidget* CurrentWidget = nullptr;
+	if (!GameMatchWidgets.Contains(GameMatchState))
+		return;
 
-	if (GameMatchWidgets.Contains(GameMatchState))
-	{
-		CurrentWidget = GameMatchWidgets[GameMatchState];
-	}
+	const auto CurrentWidget = GameMatchWidgets[GameMatchState];
 
 	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
 	{
@@ -45,12 +43,10 @@ void ARPS_HUD::HandleOnGameMatchStateChanged(ERPS_GameMatchState GameMatchState)
 
 void ARPS_HUD::HandleOnGameRoundStateChanged(ERPS_GameRoundState GameRoundState)
 {
-	UUserWidget* CurrentWidget = nullptr;
+	if (!GameRoundWidgets.Contains(GameRoundState))
+		return;
 
-	if (GameRoundWidgets.Contains(GameRoundState))
-	{
-		CurrentWidget = GameRoundWidgets[GameRoundState];
-	}
+	const auto CurrentWidget = GameRoundWidgets[GameRoundState];
 
 	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
 	{

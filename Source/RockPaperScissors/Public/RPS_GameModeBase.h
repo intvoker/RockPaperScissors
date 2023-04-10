@@ -57,6 +57,7 @@ public:
 	int32 GetCurrentRoundRemainingSeconds() const { return CurrentRoundRemainingSeconds; }
 
 	FString GetHandPoseName(int32 PoseIndex) const;
+	FString GetStartRoundHandPoseName() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")

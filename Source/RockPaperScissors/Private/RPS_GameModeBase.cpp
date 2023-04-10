@@ -75,6 +75,11 @@ FString ARPS_GameModeBase::GetHandPoseName(int32 PoseIndex) const
 	return LeftHand->GetHandPoseName(PoseIndex);
 }
 
+FString ARPS_GameModeBase::GetStartRoundHandPoseName() const
+{
+	return GetHandPoseName(StartRoundPoseIndex);
+}
+
 void ARPS_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
