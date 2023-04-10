@@ -6,16 +6,6 @@
 #include "Hands/RPS_Hand.h"
 #include "RPS_Types.h"
 
-void ARPS_PlayerState::SetMatchResult(ERPS_GameMatchResult GameMatchResult)
-{
-	MatchResult = GameMatchResult;
-}
-
-ERPS_GameMatchResult ARPS_PlayerState::GetMatchResult() const
-{
-	return MatchResult;
-}
-
 int32 ARPS_PlayerState::GetWins() const
 {
 	return NumByRoundResult(ERPS_GameRoundResult::Win);

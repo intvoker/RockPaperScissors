@@ -16,8 +16,8 @@ class ROCKPAPERSCISSORS_API ARPS_PlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
-	void SetMatchResult(ERPS_GameMatchResult GameMatchResult);
-	ERPS_GameMatchResult GetMatchResult() const;
+	ERPS_GameMatchResult GetMatchResult() const { return MatchResult; }
+	void SetMatchResult(ERPS_GameMatchResult GameMatchResult) { MatchResult = GameMatchResult; }
 
 	int32 GetWins() const;
 	void AddWin(int32 RoundIndex, int32 PoseIndex);
