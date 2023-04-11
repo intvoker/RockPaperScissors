@@ -22,11 +22,12 @@ FText URPS_GameMatchEndedWidget::GetMatchResultInfo()
 
 	const auto PlayerMatchResult = RPS_PlayerState->GetMatchResult();
 	const auto PlayerGameMatchResult = UEnum::GetDisplayValueAsText(PlayerMatchResult).ToString();
+	const auto PlayerGameMatchResultInfo = FString::Printf(TEXT("It's a %s!"), *PlayerGameMatchResult);
 
 	const auto PlayerMatchResultInfo = GetPlayerStateMatchResultInfo(RPS_PlayerState);
 	const auto AIPlayerMatchResultInfo = GetPlayerStateMatchResultInfo(RPS_AIPlayerState);
 
-	const auto MatchResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameMatchResult, LINE_TERMINATOR,
+	const auto MatchResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameMatchResultInfo, LINE_TERMINATOR,
 	                                             *PlayerMatchResultInfo, LINE_TERMINATOR, *AIPlayerMatchResultInfo);
 
 	return FText::FromString(MatchResultInfo);
@@ -34,10 +35,6 @@ FText URPS_GameMatchEndedWidget::GetMatchResultInfo()
 
 FString URPS_GameMatchEndedWidget::GetPlayerStateMatchResultInfo(const ARPS_PlayerState* RPS_PlayerState)
 {
-	const auto MatchResult = RPS_PlayerState->GetMatchResult();
-	const auto GameMatchResult = UEnum::GetDisplayValueAsText(MatchResult).ToString();
-
-	return FString::Printf(
-		TEXT("%s Wins: %d. Losses: %d. Ties: %d. Match result: %s."), *RPS_PlayerState->GetPlayerName(),
-		RPS_PlayerState->GetWins(), RPS_PlayerState->GetLosses(), RPS_PlayerState->GetTies(), *GameMatchResult);
+	return FString::Printf(TEXT("%s - %d Wins, %d Losses, %d Ties"), *RPS_PlayerState->GetPlayerName(),
+	                       RPS_PlayerState->GetWins(), RPS_PlayerState->GetLosses(), RPS_PlayerState->GetTies());
 }

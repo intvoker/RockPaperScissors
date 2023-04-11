@@ -22,11 +22,12 @@ FText URPS_GameRoundEndedWidget::GetRoundResultInfo()
 
 	const auto PlayerRoundResult = RPS_PlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
 	const auto PlayerGameRoundResult = UEnum::GetDisplayValueAsText(PlayerRoundResult.Value).ToString();
+	const auto PlayerGameRoundResultInfo = FString::Printf(TEXT("It's a %s!"), *PlayerGameRoundResult);
 
 	const auto PlayerRoundResultInfo = GetPlayerStateRoundResultInfo(RPS_GameModeBase, RPS_PlayerState);
 	const auto AIPlayerRoundResultInfo = GetPlayerStateRoundResultInfo(RPS_GameModeBase, RPS_AIPlayerState);
 
-	const auto RoundResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameRoundResult, LINE_TERMINATOR,
+	const auto RoundResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameRoundResultInfo, LINE_TERMINATOR,
 	                                             *PlayerRoundResultInfo, LINE_TERMINATOR, *AIPlayerRoundResultInfo);
 
 	return FText::FromString(RoundResultInfo);
@@ -36,8 +37,7 @@ FString URPS_GameRoundEndedWidget::GetPlayerStateRoundResultInfo(const ARPS_Game
                                                                  const ARPS_PlayerState* RPS_PlayerState)
 {
 	const auto RoundResult = RPS_PlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
-	const auto GameRoundResult = UEnum::GetDisplayValueAsText(RoundResult.Value).ToString();
 
-	return FString::Printf(TEXT("%s Pose: %s. Round result: %s."), *RPS_PlayerState->GetPlayerName(),
-	                       *RPS_GameModeBase->GetHandPoseName(RoundResult.Key), *GameRoundResult);
+	return FString::Printf(TEXT("%s - %s"), *RPS_PlayerState->GetPlayerName(),
+	                       *RPS_GameModeBase->GetHandPoseName(RoundResult.Key));
 }
