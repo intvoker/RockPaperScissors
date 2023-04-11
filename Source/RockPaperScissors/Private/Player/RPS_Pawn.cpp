@@ -32,24 +32,20 @@ FTransform ARPS_Pawn::GetRightHandRelativeTransform() const
 	return RightChildActorComponent->GetRelativeTransform();
 }
 
-void ARPS_Pawn::EnablePhysicsHands() const
+void ARPS_Pawn::SetSimulateHandsPhysics(bool bEnabled) const
 {
 	LeftHand->ClearHandPose();
-	LeftHand->SetSimulateHandPhysics(true);
+	LeftHand->SetSimulateHandPhysics(bEnabled);
 
 	RightHand->ClearHandPose();
-	RightHand->SetSimulateHandPhysics(true);
+	RightHand->SetSimulateHandPhysics(bEnabled);
 }
 
 void ARPS_Pawn::ResetHands()
 {
 	ActiveHand = nullptr;
 
-	LeftHand->ClearHandPose();
-	LeftHand->SetSimulateHandPhysics(false);
-
-	RightHand->ClearHandPose();
-	RightHand->SetSimulateHandPhysics(false);
+	SetSimulateHandsPhysics(false);
 }
 
 // Called when the game starts or when spawned

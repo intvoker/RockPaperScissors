@@ -391,11 +391,11 @@ void ARPS_GameModeBase::Award() const
 
 	if (PlayerState->GetMatchResult() != ERPS_GameMatchResult::Win)
 	{
-		PlayerPawn->EnablePhysicsHands();
+		PlayerPawn->SetSimulateHandsPhysics(true);
 	}
 
 	if (AIPlayerState->GetMatchResult() != ERPS_GameMatchResult::Win)
 	{
-		AIPawn->EnablePhysicsHands();
+		AIPawn->SetSimulateHandsPhysics(true);
 	}
 }
