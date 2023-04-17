@@ -59,6 +59,8 @@ public:
 	FString GetHandPoseName(int32 PoseIndex) const;
 	FString GetStartRoundHandPoseName() const;
 
+	void SpawnItemActor() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	TSubclassOf<ARPS_WidgetActor> WidgetActorClass;
@@ -71,6 +73,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	float AIPawnDistance = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	TSubclassOf<AActor> ItemActorClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	float ItemActorDistance = 50.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	int32 NumberOfPlayingPoses = 3;
@@ -121,11 +129,11 @@ private:
 	void UpdateRound();
 	void EndRound();
 
-	static FTransform GetSpawnTransform(const ARPS_Pawn* Pawn, float Distance);
+	static FTransform GetSpawnTransform(const ARPS_Pawn* Pawn, float Distance, const float Height = 0.0f);
 
-	ARPS_WidgetActor* SpawnWidgetActor(const ARPS_Pawn* Pawn, TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const;
+	ARPS_WidgetActor* SpawnWidgetActor(const ARPS_Pawn* Pawn) const;
 
-	ARPS_Pawn* SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> InAIPawnClass) const;
+	ARPS_Pawn* SpawnAIPawn(ARPS_Pawn* Pawn) const;
 
 	UFUNCTION()
 	void HandleOnLeftHandPoseRecognized(int32 PoseIndex, const FString& PoseName);

@@ -66,4 +66,6 @@ protected:
 	void SetSimulateHandPhysics(bool bEnabled);
 
 	void StartMatch();
+
+	void SpawnItemActor();
 };

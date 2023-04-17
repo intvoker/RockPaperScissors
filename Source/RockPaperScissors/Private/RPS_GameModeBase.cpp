@@ -80,6 +80,18 @@ FString ARPS_GameModeBase::GetStartRoundHandPoseName() const
 	return GetHandPoseName(StartRoundPoseIndex);
 }
 
+void ARPS_GameModeBase::SpawnItemActor() const
+{
+	if (!PlayerPawn)
+		return;
+
+	const auto Height = PlayerPawn->GetRightHandRelativeTransform().GetLocation().Z;
+
+	const auto Transform = GetSpawnTransform(PlayerPawn, ItemActorDistance, Height);
+
+	GetWorld()->SpawnActor<AActor>(ItemActorClass, Transform);
+}
+
 void ARPS_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -144,9 +156,9 @@ void ARPS_GameModeBase::SetupPawns()
 		RightHand->OnHandPoseRecognized.AddDynamic(this, &ThisClass::HandleOnRightHandPoseRecognized);
 	}
 
-	WidgetActor = SpawnWidgetActor(Pawn, WidgetActorClass);
+	WidgetActor = SpawnWidgetActor(Pawn);
 
-	AIPawn = SpawnAIPawn(Pawn, AIPawnClass);
+	AIPawn = SpawnAIPawn(Pawn);
 
 	PlayerPawn = Pawn;
 }
@@ -217,10 +229,11 @@ void ARPS_GameModeBase::EndRound()
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
 }
 
-FTransform ARPS_GameModeBase::GetSpawnTransform(const ARPS_Pawn* Pawn, const float Distance)
+FTransform ARPS_GameModeBase::GetSpawnTransform(const ARPS_Pawn* Pawn, const float Distance, const float Height)
 {
 	auto Location = Pawn->GetActorLocation();
 	Location += Pawn->GetActorForwardVector() * Distance;
+	Location += Pawn->GetActorUpVector() * Height;
 
 	auto Rotation = Pawn->GetActorRotation();
 	Rotation.Yaw = -180.0f;
@@ -228,26 +241,18 @@ FTransform ARPS_GameModeBase::GetSpawnTransform(const ARPS_Pawn* Pawn, const flo
 	return FTransform(Rotation, Location);
 }
 
-ARPS_WidgetActor* ARPS_GameModeBase::SpawnWidgetActor(const ARPS_Pawn* Pawn,
-                                                      TSubclassOf<ARPS_WidgetActor> InWidgetActorClass) const
+ARPS_WidgetActor* ARPS_GameModeBase::SpawnWidgetActor(const ARPS_Pawn* Pawn) const
 {
 	const auto Transform = GetSpawnTransform(Pawn, WidgetActorDistance);
 
-	if (const auto SpawnedWidgetActor = GetWorld()->SpawnActorDeferred<ARPS_WidgetActor>(InWidgetActorClass, Transform))
-	{
-		SpawnedWidgetActor->FinishSpawning(Transform);
-
-		return SpawnedWidgetActor;
-	}
-
-	return nullptr;
+	return GetWorld()->SpawnActor<ARPS_WidgetActor>(WidgetActorClass, Transform);
 }
 
-ARPS_Pawn* ARPS_GameModeBase::SpawnAIPawn(ARPS_Pawn* Pawn, TSubclassOf<ARPS_Pawn> InAIPawnClass) const
+ARPS_Pawn* ARPS_GameModeBase::SpawnAIPawn(ARPS_Pawn* Pawn) const
 {
 	const auto Transform = GetSpawnTransform(Pawn, AIPawnDistance);
 
-	if (const auto SpawnedAIPawn = GetWorld()->SpawnActorDeferred<ARPS_Pawn>(InAIPawnClass, Transform))
+	if (const auto SpawnedAIPawn = GetWorld()->SpawnActorDeferred<ARPS_Pawn>(AIPawnClass, Transform))
 	{
 		SpawnedAIPawn->SetRivalPawn(Pawn);
 		SpawnedAIPawn->FinishSpawning(Transform);

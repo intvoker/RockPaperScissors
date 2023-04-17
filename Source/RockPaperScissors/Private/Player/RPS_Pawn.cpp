@@ -103,3 +103,11 @@ void ARPS_Pawn::StartMatch()
 		RPS_GameModeBase->StartMatch();
 	}
 }
+
+void ARPS_Pawn::SpawnItemActor()
+{
+	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
+	{
+		RPS_GameModeBase->SpawnItemActor();
+	}
+}

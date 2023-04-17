@@ -60,6 +60,8 @@ void ARPS_PlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("ResetHands", IE_Pressed, this, &ThisClass::ResetHands);
 
 	PlayerInputComponent->BindAction("StartMatch", IE_Pressed, this, &ThisClass::StartMatch);
+
+	PlayerInputComponent->BindAction("SpawnItemActor", IE_Pressed, this, &ThisClass::SpawnItemActor);
 }
 
 FTransform ARPS_PlayerPawn::GetLeftHandRelativeTransform() const
