@@ -22,10 +22,13 @@ struct FRPS_GameData
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 NumberOfRounds = 5;
+	int32 NumberOfRounds = 3;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 RoundTime = 5;
+	int32 RoundTime = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	bool bImmediatePlay = false;
 };
 
 /**
@@ -89,7 +92,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	FRPS_GameData GameData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	float UpdateRoundTime = 1.0f;
 
 	virtual void BeginPlay() override;
@@ -143,7 +146,9 @@ private:
 
 	void HandleOnHandPoseRecognized(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName);
 
-	void SetHandPose(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName) const;
+	void ReadHandPoses() const;
+
+	bool ReadHandPose(const ARPS_Hand* Hand, ARPS_Hand* AIHand) const;
 
 	int32 GetRandomHandPoseIndex() const;
 	int32 GetWinHandPoseIndex(int32 PoseIndex) const;

@@ -46,6 +46,7 @@ public:
 
 	FString GetHandPoseName(int32 PoseIndex) const;
 
+	int32 GetHandPose() const { return CurrentHandPoseIndex; }
 	void SetHandPose(int32 PoseIndex);
 	void SetHandPose(const FString& PoseString);
 	void ClearHandPose();

@@ -68,11 +68,11 @@ FString ARPS_GameModeBase::GetHandPoseName(int32 PoseIndex) const
 	if (!PlayerPawn)
 		return ARPS_Hand::DefaultHandPoseName;
 
-	const auto LeftHand = PlayerPawn->GetLeftHand();
-	if (!LeftHand)
+	const auto RightHand = PlayerPawn->GetRightHand();
+	if (!RightHand)
 		return ARPS_Hand::DefaultHandPoseName;
 
-	return LeftHand->GetHandPoseName(PoseIndex);
+	return RightHand->GetHandPoseName(PoseIndex);
 }
 
 FString ARPS_GameModeBase::GetStartRoundHandPoseName() const
@@ -217,7 +217,7 @@ void ARPS_GameModeBase::UpdateRound()
 
 	if (CurrentRoundRemainingSeconds <= 0)
 	{
-		Posed(ARPS_Hand::DefaultHandPoseIndex, ARPS_Hand::DefaultHandPoseIndex);
+		ReadHandPoses();
 		EndRound();
 	}
 }
@@ -290,28 +290,39 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognized(ARPS_Hand* AIHand, int32 Pose
 		return;
 	}
 
-	if (GameRoundState == ERPS_GameRoundState::Started && IsPlayingPose(PoseIndex))
+	if (GameRoundState == ERPS_GameRoundState::Started && IsPlayingPose(PoseIndex) && GameData.bImmediatePlay)
 	{
-		SetHandPose(AIHand, PoseIndex, PoseName);
+		ReadHandPoses();
 		EndRound();
 	}
 }
 
-void ARPS_GameModeBase::SetHandPose(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName) const
+void ARPS_GameModeBase::ReadHandPoses() const
 {
-	if (!AIHand)
+	if (ReadHandPose(PlayerPawn->GetRightHand(), AIPawn->GetRightHand()))
 		return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("SetHandPose: %s %d %s."), *AIHand->GetName(), PoseIndex, *PoseName);
+	if (ReadHandPose(PlayerPawn->GetLeftHand(), AIPawn->GetLeftHand()))
+		return;
 
+	Posed(ARPS_Hand::DefaultHandPoseIndex, ARPS_Hand::DefaultHandPoseIndex);
+}
+
+bool ARPS_GameModeBase::ReadHandPose(const ARPS_Hand* Hand, ARPS_Hand* AIHand) const
+{
+	const auto PoseIndex = Hand->GetHandPose();
 	const auto AIPoseIndex = GetRandomHandPoseIndex();
 
-	if (AIPoseIndex == ARPS_Hand::DefaultHandPoseIndex)
-		return;
+	if (IsPlayingPose(PoseIndex))
+	{
+		AIHand->SetHandPose(AIPoseIndex);
 
-	AIHand->SetHandPose(AIPoseIndex);
+		Posed(PoseIndex, AIPoseIndex);
 
-	Posed(PoseIndex, AIPoseIndex);
+		return true;
+	}
+
+	return false;
 }
 
 int32 ARPS_GameModeBase::GetRandomHandPoseIndex() const
