@@ -217,13 +217,14 @@ void ARPS_GameModeBase::UpdateRound()
 
 	if (CurrentRoundRemainingSeconds <= 0)
 	{
-		ReadHandPoses();
 		EndRound();
 	}
 }
 
 void ARPS_GameModeBase::EndRound()
 {
+	ReadHandPoses();
+
 	SetGameRoundState(ERPS_GameRoundState::Ended);
 
 	GetWorld()->GetTimerManager().ClearTimer(UpdateRoundTimerHandle);
@@ -283,7 +284,6 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognized(int32 PoseIndex, const FStrin
 
 	if (GameRoundState == ERPS_GameRoundState::Started && IsPlayingPose(PoseIndex) && GameData.bImmediatePlay)
 	{
-		ReadHandPoses();
 		EndRound();
 	}
 }
