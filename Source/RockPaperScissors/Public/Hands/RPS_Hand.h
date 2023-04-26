@@ -44,10 +44,8 @@ public:
 
 	void LogHandPose() const;
 
-	void PrintHandPose(EOculusHandType Side, const FString& Name) const;
-	static FName HandNameFromType(EOculusHandType HandType);
-
 	FString GetHandPoseName(int32 PoseIndex) const;
+
 	void SetHandPose(int32 PoseIndex);
 	void SetHandPose(const FString& PoseString);
 	void ClearHandPose();
@@ -85,7 +83,10 @@ protected:
 
 	void PostSetHandType(EOculusHandType InHandType) const;
 
-	FHandPose* GetHandPose(int32 PoseIndex) const;
+	FHandPose* FindHandPose(int32 PoseIndex) const;
+
+	void PrintHandPose(EOculusHandType Side, const FString& Name) const;
+	static FName HandNameFromType(EOculusHandType HandType);
 
 private:
 	bool bHasOwner = false;

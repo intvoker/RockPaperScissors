@@ -87,31 +87,9 @@ void ARPS_Hand::LogHandPose() const
 	HandPoseRecognizer->LogEncodedHandPose();
 }
 
-void ARPS_Hand::PrintHandPose(EOculusHandType Side, const FString& Name) const
-{
-	const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(Side).ToString(), *Name);
-	UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
-}
-
-FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
-{
-	switch (HandType)
-	{
-	case EOculusHandType::HandLeft:
-		return FXRMotionControllerBase::LeftHandSourceId;
-	case EOculusHandType::HandRight:
-		return FXRMotionControllerBase::RightHandSourceId;
-	case EOculusHandType::None:
-		break;
-	default: ;
-	}
-
-	return NAME_None;
-}
-
 FString ARPS_Hand::GetHandPoseName(int32 PoseIndex) const
 {
-	const auto Pose = GetHandPose(PoseIndex);
+	const auto Pose = FindHandPose(PoseIndex);
 	if (!Pose)
 		return DefaultHandPoseName;
 
@@ -120,7 +98,7 @@ FString ARPS_Hand::GetHandPoseName(int32 PoseIndex) const
 
 void ARPS_Hand::SetHandPose(int32 PoseIndex)
 {
-	const auto Pose = GetHandPose(PoseIndex);
+	const auto Pose = FindHandPose(PoseIndex);
 	if (!Pose)
 		return;
 
@@ -250,10 +228,32 @@ void ARPS_Hand::PostSetHandType(EOculusHandType InHandType) const
 	HandPoseRecognizer->Side = InHandType;
 }
 
-FHandPose* ARPS_Hand::GetHandPose(int32 PoseIndex) const
+FHandPose* ARPS_Hand::FindHandPose(int32 PoseIndex) const
 {
 	if (PoseIndex < 0 || PoseIndex >= HandPoseRecognizer->Poses.Num())
 		return nullptr;
 
 	return &HandPoseRecognizer->Poses[PoseIndex];
+}
+
+void ARPS_Hand::PrintHandPose(EOculusHandType Side, const FString& Name) const
+{
+	const auto Output = FString::Printf(TEXT("%s %s"), *HandNameFromType(Side).ToString(), *Name);
+	UKismetSystemLibrary::PrintString(GetWorld(), Output, true, false);
+}
+
+FName ARPS_Hand::HandNameFromType(EOculusHandType HandType)
+{
+	switch (HandType)
+	{
+	case EOculusHandType::HandLeft:
+		return FXRMotionControllerBase::LeftHandSourceId;
+	case EOculusHandType::HandRight:
+		return FXRMotionControllerBase::RightHandSourceId;
+	case EOculusHandType::None:
+		break;
+	default: ;
+	}
+
+	return NAME_None;
 }
