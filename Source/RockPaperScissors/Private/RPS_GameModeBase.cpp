@@ -265,25 +265,16 @@ ARPS_Pawn* ARPS_GameModeBase::SpawnAIPawn(ARPS_Pawn* Pawn) const
 
 void ARPS_GameModeBase::HandleOnLeftHandPoseRecognized(int32 PoseIndex, const FString& PoseName)
 {
-	if (!AIPawn)
-		return;
-
-	HandleOnHandPoseRecognized(AIPawn->GetLeftHand(), PoseIndex, PoseName);
+	HandleOnHandPoseRecognized(PoseIndex, PoseName);
 }
 
 void ARPS_GameModeBase::HandleOnRightHandPoseRecognized(int32 PoseIndex, const FString& PoseName)
 {
-	if (!AIPawn)
-		return;
-
-	HandleOnHandPoseRecognized(AIPawn->GetRightHand(), PoseIndex, PoseName);
+	HandleOnHandPoseRecognized(PoseIndex, PoseName);
 }
 
-void ARPS_GameModeBase::HandleOnHandPoseRecognized(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName)
+void ARPS_GameModeBase::HandleOnHandPoseRecognized(int32 PoseIndex, const FString& PoseName)
 {
-	if (!AIHand)
-		return;
-
 	if (GameRoundState != ERPS_GameRoundState::Started && IsStartRoundPose(PoseIndex))
 	{
 		StartRound();
@@ -299,6 +290,9 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognized(ARPS_Hand* AIHand, int32 Pose
 
 void ARPS_GameModeBase::ReadHandPoses() const
 {
+	if (!PlayerPawn || !AIPawn)
+		return;
+
 	if (ReadHandPose(PlayerPawn->GetRightHand(), AIPawn->GetRightHand()))
 		return;
 
@@ -308,16 +302,19 @@ void ARPS_GameModeBase::ReadHandPoses() const
 	Posed(ARPS_Hand::DefaultHandPoseIndex, ARPS_Hand::DefaultHandPoseIndex);
 }
 
-bool ARPS_GameModeBase::ReadHandPose(const ARPS_Hand* Hand, ARPS_Hand* AIHand) const
+bool ARPS_GameModeBase::ReadHandPose(const ARPS_Hand* PlayerHand, ARPS_Hand* AIHand) const
 {
-	const auto PoseIndex = Hand->GetHandPose();
+	if (!PlayerHand || !AIHand)
+		return false;
+
+	const auto PlayerPoseIndex = PlayerHand->GetHandPose();
 	const auto AIPoseIndex = GetRandomHandPoseIndex();
 
-	if (IsPlayingPose(PoseIndex))
+	if (IsPlayingPose(PlayerPoseIndex))
 	{
 		AIHand->SetHandPose(AIPoseIndex);
 
-		Posed(PoseIndex, AIPoseIndex);
+		Posed(PlayerPoseIndex, AIPoseIndex);
 
 		return true;
 	}
@@ -347,7 +344,7 @@ int32 ARPS_GameModeBase::GetWinHandPoseIndex(int32 PoseIndex) const
 	return WinPoseIndex;
 }
 
-void ARPS_GameModeBase::Posed(int32 PoseIndex, int32 AIPoseIndex) const
+void ARPS_GameModeBase::Posed(int32 PlayerPoseIndex, int32 AIPoseIndex) const
 {
 	const auto PlayerState = GetPlayerState();
 	const auto AIPlayerState = GetAIPlayerState();
@@ -355,19 +352,19 @@ void ARPS_GameModeBase::Posed(int32 PoseIndex, int32 AIPoseIndex) const
 	if (!PlayerState || !AIPlayerState)
 		return;
 
-	if (PoseIndex == AIPoseIndex)
+	if (PlayerPoseIndex == AIPoseIndex)
 	{
-		PlayerState->AddTie(CurrentRoundIndex, PoseIndex);
+		PlayerState->AddTie(CurrentRoundIndex, PlayerPoseIndex);
 		AIPlayerState->AddTie(CurrentRoundIndex, AIPoseIndex);
 	}
-	else if (PoseIndex == GetWinHandPoseIndex(AIPoseIndex))
+	else if (PlayerPoseIndex == GetWinHandPoseIndex(AIPoseIndex))
 	{
-		PlayerState->AddWin(CurrentRoundIndex, PoseIndex);
+		PlayerState->AddWin(CurrentRoundIndex, PlayerPoseIndex);
 		AIPlayerState->AddLoss(CurrentRoundIndex, AIPoseIndex);
 	}
 	else
 	{
-		PlayerState->AddLoss(CurrentRoundIndex, PoseIndex);
+		PlayerState->AddLoss(CurrentRoundIndex, PlayerPoseIndex);
 		AIPlayerState->AddWin(CurrentRoundIndex, AIPoseIndex);
 	}
 }
@@ -403,6 +400,9 @@ void ARPS_GameModeBase::Award() const
 	const auto AIPlayerState = GetAIPlayerState();
 
 	if (!PlayerState || !AIPlayerState)
+		return;
+
+	if (!PlayerPawn || !AIPawn)
 		return;
 
 	if (PlayerState->GetMatchResult() != ERPS_GameMatchResult::Win)

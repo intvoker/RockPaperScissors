@@ -144,16 +144,16 @@ private:
 	UFUNCTION()
 	void HandleOnRightHandPoseRecognized(int32 PoseIndex, const FString& PoseName);
 
-	void HandleOnHandPoseRecognized(ARPS_Hand* AIHand, int32 PoseIndex, const FString& PoseName);
+	void HandleOnHandPoseRecognized(int32 PoseIndex, const FString& PoseName);
 
 	void ReadHandPoses() const;
 
-	bool ReadHandPose(const ARPS_Hand* Hand, ARPS_Hand* AIHand) const;
+	bool ReadHandPose(const ARPS_Hand* PlayerHand, ARPS_Hand* AIHand) const;
 
 	int32 GetRandomHandPoseIndex() const;
 	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
 
-	void Posed(int32 PoseIndex, int32 AIPoseIndex) const;
+	void Posed(int32 PlayerPoseIndex, int32 AIPoseIndex) const;
 
 	void Finished() const;
 
