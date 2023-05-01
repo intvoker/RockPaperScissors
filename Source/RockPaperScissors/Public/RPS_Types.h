@@ -38,18 +38,3 @@ enum class ERPS_GameRoundResult : uint8
 	Loss,
 	Tie
 };
-
-USTRUCT(BlueprintType)
-struct FRPS_GameData
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 NumberOfRounds = 3;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 RoundTime = 3;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Game")
-	bool bImmediatePlay = false;
-};

@@ -16,6 +16,21 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameMatchStateChangedSignature, ERP
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameRoundStateChangedSignature, ERPS_GameRoundState, GameRoundState);
 
+USTRUCT(BlueprintType)
+struct FRPS_GameData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
+	int32 NumberOfRounds = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
+	int32 RoundTime = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	bool bImmediatePlay = false;
+};
+
 /**
  * 
  */
