@@ -20,9 +20,27 @@ void URPS_GameRoundEndedWidget::HandleOnNativeVisibilityChanged(ESlateVisibility
 		return;
 
 	RoundResultTextBlock->SetText(GetRoundResultInfo());
+	RoundStatsTextBlock->SetText(GetRoundStatsInfo());
 }
 
 FText URPS_GameRoundEndedWidget::GetRoundResultInfo() const
+{
+	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
+	if (!RPS_GameModeBase)
+		return FText::GetEmpty();
+
+	const auto RPS_PlayerState = RPS_GameModeBase->GetPlayerState();
+	if (!RPS_PlayerState)
+		return FText::GetEmpty();
+
+	const auto PlayerRoundResult = RPS_PlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
+	const auto PlayerGameRoundResult = UEnum::GetDisplayValueAsText(PlayerRoundResult.Value).ToString();
+	const auto PlayerGameRoundResultInfo = FString::Printf(TEXT("It's a %s!"), *PlayerGameRoundResult);
+
+	return FText::FromString(PlayerGameRoundResultInfo);
+}
+
+FText URPS_GameRoundEndedWidget::GetRoundStatsInfo() const
 {
 	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
 	if (!RPS_GameModeBase)
@@ -36,20 +54,16 @@ FText URPS_GameRoundEndedWidget::GetRoundResultInfo() const
 	if (!RPS_AIPlayerState)
 		return FText::GetEmpty();
 
-	const auto PlayerRoundResult = RPS_PlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());
-	const auto PlayerGameRoundResult = UEnum::GetDisplayValueAsText(PlayerRoundResult.Value).ToString();
-	const auto PlayerGameRoundResultInfo = FString::Printf(TEXT("It's a %s!"), *PlayerGameRoundResult);
+	const auto PlayerRoundStatsInfo = GetPlayerStateRoundStatsInfo(RPS_GameModeBase, RPS_PlayerState);
+	const auto AIPlayerRoundStatsInfo = GetPlayerStateRoundStatsInfo(RPS_GameModeBase, RPS_AIPlayerState);
 
-	const auto PlayerRoundResultInfo = GetPlayerStateRoundResultInfo(RPS_GameModeBase, RPS_PlayerState);
-	const auto AIPlayerRoundResultInfo = GetPlayerStateRoundResultInfo(RPS_GameModeBase, RPS_AIPlayerState);
+	const auto RoundStatsInfo = FString::Printf(TEXT("%s%s%s"), *PlayerRoundStatsInfo, LINE_TERMINATOR,
+	                                            *AIPlayerRoundStatsInfo);
 
-	const auto RoundResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameRoundResultInfo, LINE_TERMINATOR,
-	                                             *PlayerRoundResultInfo, LINE_TERMINATOR, *AIPlayerRoundResultInfo);
-
-	return FText::FromString(RoundResultInfo);
+	return FText::FromString(RoundStatsInfo);
 }
 
-FString URPS_GameRoundEndedWidget::GetPlayerStateRoundResultInfo(const ARPS_GameModeBase* RPS_GameModeBase,
+FString URPS_GameRoundEndedWidget::GetPlayerStateRoundStatsInfo(const ARPS_GameModeBase* RPS_GameModeBase,
                                                                  const ARPS_PlayerState* RPS_PlayerState)
 {
 	const auto RoundResult = RPS_PlayerState->GetRoundResult(RPS_GameModeBase->GetCurrentRoundIndex());

@@ -20,9 +20,27 @@ void URPS_GameMatchEndedWidget::HandleOnNativeVisibilityChanged(ESlateVisibility
 		return;
 
 	MatchResultTextBlock->SetText(GetMatchResultInfo());
+	MatchStatsTextBlock->SetText(GetMatchStatsInfo());
 }
 
 FText URPS_GameMatchEndedWidget::GetMatchResultInfo() const
+{
+	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
+	if (!RPS_GameModeBase)
+		return FText::GetEmpty();
+
+	const auto RPS_PlayerState = RPS_GameModeBase->GetPlayerState();
+	if (!RPS_PlayerState)
+		return FText::GetEmpty();
+
+	const auto PlayerMatchResult = RPS_PlayerState->GetMatchResult();
+	const auto PlayerGameMatchResult = UEnum::GetDisplayValueAsText(PlayerMatchResult).ToString();
+	const auto PlayerGameMatchResultInfo = FString::Printf(TEXT("It's a %s!"), *PlayerGameMatchResult);
+
+	return FText::FromString(PlayerGameMatchResultInfo);
+}
+
+FText URPS_GameMatchEndedWidget::GetMatchStatsInfo() const
 {
 	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
 	if (!RPS_GameModeBase)
@@ -36,20 +54,16 @@ FText URPS_GameMatchEndedWidget::GetMatchResultInfo() const
 	if (!RPS_AIPlayerState)
 		return FText::GetEmpty();
 
-	const auto PlayerMatchResult = RPS_PlayerState->GetMatchResult();
-	const auto PlayerGameMatchResult = UEnum::GetDisplayValueAsText(PlayerMatchResult).ToString();
-	const auto PlayerGameMatchResultInfo = FString::Printf(TEXT("It's a %s!"), *PlayerGameMatchResult);
+	const auto PlayerMatchStatsInfo = GetPlayerStateMatchStatsInfo(RPS_PlayerState);
+	const auto AIPlayerMatchStatsInfo = GetPlayerStateMatchStatsInfo(RPS_AIPlayerState);
 
-	const auto PlayerMatchResultInfo = GetPlayerStateMatchResultInfo(RPS_PlayerState);
-	const auto AIPlayerMatchResultInfo = GetPlayerStateMatchResultInfo(RPS_AIPlayerState);
+	const auto MatchStatsInfo = FString::Printf(TEXT("%s%s%s"), *PlayerMatchStatsInfo, LINE_TERMINATOR,
+	                                            *AIPlayerMatchStatsInfo);
 
-	const auto MatchResultInfo = FString::Printf(TEXT("%s%s%s%s%s"), *PlayerGameMatchResultInfo, LINE_TERMINATOR,
-	                                             *PlayerMatchResultInfo, LINE_TERMINATOR, *AIPlayerMatchResultInfo);
-
-	return FText::FromString(MatchResultInfo);
+	return FText::FromString(MatchStatsInfo);
 }
 
-FString URPS_GameMatchEndedWidget::GetPlayerStateMatchResultInfo(const ARPS_PlayerState* RPS_PlayerState)
+FString URPS_GameMatchEndedWidget::GetPlayerStateMatchStatsInfo(const ARPS_PlayerState* RPS_PlayerState)
 {
 	return FString::Printf(TEXT("%s - %d Wins, %d Losses, %d Ties"), *RPS_PlayerState->GetPlayerName(),
 	                       RPS_PlayerState->GetWins(), RPS_PlayerState->GetLosses(), RPS_PlayerState->GetTies());

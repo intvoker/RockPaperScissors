@@ -22,6 +22,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* RoundResultTextBlock;
 
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* RoundStatsTextBlock;
+
 	virtual void NativeConstruct() override;
 
 private:
@@ -29,6 +32,8 @@ private:
 
 	FText GetRoundResultInfo() const;
 
-	static FString GetPlayerStateRoundResultInfo(const ARPS_GameModeBase* RPS_GameModeBase,
+	FText GetRoundStatsInfo() const;
+
+	static FString GetPlayerStateRoundStatsInfo(const ARPS_GameModeBase* RPS_GameModeBase,
 	                                             const ARPS_PlayerState* RPS_PlayerState);
 };

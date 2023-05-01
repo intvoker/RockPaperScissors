@@ -21,6 +21,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MatchResultTextBlock;
 
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MatchStatsTextBlock;
+
 	virtual void NativeConstruct() override;
 
 private:
@@ -28,5 +31,7 @@ private:
 
 	FText GetMatchResultInfo() const;
 
-	static FString GetPlayerStateMatchResultInfo(const ARPS_PlayerState* RPS_PlayerState);
+	FText GetMatchStatsInfo() const;
+
+	static FString GetPlayerStateMatchStatsInfo(const ARPS_PlayerState* RPS_PlayerState);
 };
