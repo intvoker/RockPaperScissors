@@ -3,10 +3,26 @@
 
 #include "UI/RPS_GameMatchEndedWidget.h"
 
+#include "Components/TextBlock.h"
 #include "Player/RPS_PlayerState.h"
 #include "RPS_GameModeBase.h"
 
-FText URPS_GameMatchEndedWidget::GetMatchResultInfo()
+void URPS_GameMatchEndedWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	OnNativeVisibilityChanged.AddUObject(this, &ThisClass::HandleOnNativeVisibilityChanged);
+}
+
+void URPS_GameMatchEndedWidget::HandleOnNativeVisibilityChanged(ESlateVisibility InVisibility)
+{
+	if (InVisibility != ESlateVisibility::Visible)
+		return;
+
+	MatchResultTextBlock->SetText(GetMatchResultInfo());
+}
+
+FText URPS_GameMatchEndedWidget::GetMatchResultInfo() const
 {
 	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
 	if (!RPS_GameModeBase)

@@ -32,6 +32,9 @@ protected:
 
 private:
 	UPROPERTY()
+	UUserWidget* CurrentGameWidget = nullptr;
+
+	UPROPERTY()
 	TMap<ERPS_GameMatchState, UUserWidget*> GameMatchWidgets;
 
 	UPROPERTY()
@@ -42,4 +45,8 @@ private:
 
 	UFUNCTION()
 	void HandleOnGameRoundStateChanged(ERPS_GameRoundState GameRoundState);
+
+	UUserWidget* CreateGameWidget(TSubclassOf<UUserWidget> WidgetClass) const;
+
+	void SetCurrentGameWidget(UUserWidget* InWidget);
 };

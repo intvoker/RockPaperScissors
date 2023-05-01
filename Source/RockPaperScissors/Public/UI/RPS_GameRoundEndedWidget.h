@@ -8,6 +8,7 @@
 
 class ARPS_GameModeBase;
 class ARPS_PlayerState;
+class UTextBlock;
 
 /**
  * 
@@ -17,11 +18,17 @@ class ROCKPAPERSCISSORS_API URPS_GameRoundEndedWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintCallable, Category = "UI")
-	FText GetRoundResultInfo();
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* RoundResultTextBlock;
+
+	virtual void NativeConstruct() override;
 
 private:
+	void HandleOnNativeVisibilityChanged(ESlateVisibility InVisibility);
+
+	FText GetRoundResultInfo() const;
+
 	static FString GetPlayerStateRoundResultInfo(const ARPS_GameModeBase* RPS_GameModeBase,
 	                                             const ARPS_PlayerState* RPS_PlayerState);
 };

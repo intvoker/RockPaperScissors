@@ -11,15 +11,11 @@ void ARPS_HUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GameMatchWidgets.Add(ERPS_GameMatchState::Started,
-	                     CreateWidget<UUserWidget>(GetWorld(), GameMatchStartedWidgetClass));
-	GameMatchWidgets.Add(ERPS_GameMatchState::Ended,
-	                     CreateWidget<UUserWidget>(GetWorld(), GameMatchEndedWidgetClass));
+	GameMatchWidgets.Add(ERPS_GameMatchState::Started, CreateGameWidget(GameMatchStartedWidgetClass));
+	GameMatchWidgets.Add(ERPS_GameMatchState::Ended, CreateGameWidget(GameMatchEndedWidgetClass));
 
-	GameRoundWidgets.Add(ERPS_GameRoundState::Started,
-	                     CreateWidget<UUserWidget>(GetWorld(), GameRoundStartedWidgetClass));
-	GameRoundWidgets.Add(ERPS_GameRoundState::Ended,
-	                     CreateWidget<UUserWidget>(GetWorld(), GameRoundEndedWidgetClass));
+	GameRoundWidgets.Add(ERPS_GameRoundState::Started, CreateGameWidget(GameRoundStartedWidgetClass));
+	GameRoundWidgets.Add(ERPS_GameRoundState::Ended, CreateGameWidget(GameRoundEndedWidgetClass));
 
 	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
 	{
@@ -30,26 +26,45 @@ void ARPS_HUD::BeginPlay()
 
 void ARPS_HUD::HandleOnGameMatchStateChanged(ERPS_GameMatchState GameMatchState)
 {
-	if (!GameMatchWidgets.Contains(GameMatchState))
-		return;
-
-	const auto CurrentWidget = GameMatchWidgets[GameMatchState];
-
-	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
+	if (GameMatchWidgets.Contains(GameMatchState))
 	{
-		RPS_GameModeBase->GetWidgetActor()->SetWidget(CurrentWidget);
+		SetCurrentGameWidget(GameMatchWidgets[GameMatchState]);
 	}
 }
 
 void ARPS_HUD::HandleOnGameRoundStateChanged(ERPS_GameRoundState GameRoundState)
 {
-	if (!GameRoundWidgets.Contains(GameRoundState))
-		return;
+	if (GameRoundWidgets.Contains(GameRoundState))
+	{
+		SetCurrentGameWidget(GameRoundWidgets[GameRoundState]);
+	}
+}
 
-	const auto CurrentWidget = GameRoundWidgets[GameRoundState];
+UUserWidget* ARPS_HUD::CreateGameWidget(TSubclassOf<UUserWidget> WidgetClass) const
+{
+	const auto GameWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+
+	GameWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	return GameWidget;
+}
+
+void ARPS_HUD::SetCurrentGameWidget(UUserWidget* InWidget)
+{
+	if (CurrentGameWidget)
+	{
+		CurrentGameWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	CurrentGameWidget = InWidget;
 
 	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
 	{
-		RPS_GameModeBase->GetWidgetActor()->SetWidget(CurrentWidget);
+		RPS_GameModeBase->GetWidgetActor()->SetWidget(CurrentGameWidget);
+	}
+
+	if (CurrentGameWidget)
+	{
+		CurrentGameWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }

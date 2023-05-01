@@ -7,6 +7,7 @@
 #include "RPS_GameMatchEndedWidget.generated.h"
 
 class ARPS_PlayerState;
+class UTextBlock;
 
 /**
  * 
@@ -16,10 +17,16 @@ class ROCKPAPERSCISSORS_API URPS_GameMatchEndedWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintCallable, Category = "UI")
-	FText GetMatchResultInfo();
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* MatchResultTextBlock;
+
+	virtual void NativeConstruct() override;
 
 private:
+	void HandleOnNativeVisibilityChanged(ESlateVisibility InVisibility);
+
+	FText GetMatchResultInfo() const;
+
 	static FString GetPlayerStateMatchResultInfo(const ARPS_PlayerState* RPS_PlayerState);
 };
