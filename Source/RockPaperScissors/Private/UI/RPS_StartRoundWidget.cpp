@@ -25,7 +25,7 @@ void URPS_StartRoundWidget::SetStartRoundInfo() const
 	//const auto StartRoundHandPoseName = RPS_GameModeBase->GetStartRoundHandPoseName();
 	const auto StartRoundHandPoseName = TEXT("Thumb Up");
 
-	const auto StartRoundInfo = FString::Printf(TEXT("Show %s to start a new round"), StartRoundHandPoseName);
+	const auto StartRoundInfo = FString::Printf(TEXT("Use %s to start a new round"), StartRoundHandPoseName);
 
 	StartRoundTextBlock->SetText(FText::FromString(StartRoundInfo));
 }
