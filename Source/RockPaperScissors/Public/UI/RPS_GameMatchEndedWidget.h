@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MatchStatsTextBlock;
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void HandleOnNativeVisibilityChanged(ESlateVisibility InVisibility);

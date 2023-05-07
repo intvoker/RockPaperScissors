@@ -20,7 +20,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* StartRoundTextBlock;
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void SetStartRoundInfo() const;

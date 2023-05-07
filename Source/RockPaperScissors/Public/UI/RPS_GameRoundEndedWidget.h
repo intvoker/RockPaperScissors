@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* RoundStatsTextBlock;
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void HandleOnNativeVisibilityChanged(ESlateVisibility InVisibility);

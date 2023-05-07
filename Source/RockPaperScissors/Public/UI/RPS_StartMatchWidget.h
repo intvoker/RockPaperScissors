@@ -20,7 +20,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* StartMatchTextBlock;
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void SetStartMatchInfo() const;

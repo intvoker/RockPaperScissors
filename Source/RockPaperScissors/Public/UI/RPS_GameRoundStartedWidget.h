@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* RoundRemainingSecondsTextBlock;
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void HandleOnNativeVisibilityChanged(ESlateVisibility InVisibility);

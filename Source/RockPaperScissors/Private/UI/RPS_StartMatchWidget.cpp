@@ -6,9 +6,9 @@
 #include "Components/TextBlock.h"
 #include "RPS_GameModeBase.h"
 
-void URPS_StartMatchWidget::NativeConstruct()
+void URPS_StartMatchWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	SetStartMatchInfo();
 }

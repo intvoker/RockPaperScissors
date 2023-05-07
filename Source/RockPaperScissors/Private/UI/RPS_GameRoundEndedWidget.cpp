@@ -7,9 +7,9 @@
 #include "Player/RPS_PlayerState.h"
 #include "RPS_GameModeBase.h"
 
-void URPS_GameRoundEndedWidget::NativeConstruct()
+void URPS_GameRoundEndedWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	OnNativeVisibilityChanged.AddUObject(this, &ThisClass::HandleOnNativeVisibilityChanged);
 }

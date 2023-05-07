@@ -6,9 +6,9 @@
 #include "Components/TextBlock.h"
 #include "RPS_GameModeBase.h"
 
-void URPS_StartRoundWidget::NativeConstruct()
+void URPS_StartRoundWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	SetStartRoundInfo();
 }

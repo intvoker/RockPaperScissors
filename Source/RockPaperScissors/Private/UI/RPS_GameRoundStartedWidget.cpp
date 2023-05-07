@@ -6,20 +6,16 @@
 #include "Components/TextBlock.h"
 #include "RPS_GameModeBase.h"
 
-void URPS_GameRoundStartedWidget::NativeConstruct()
+void URPS_GameRoundStartedWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	OnNativeVisibilityChanged.AddUObject(this, &ThisClass::HandleOnNativeVisibilityChanged);
 
 	if (const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>())
 	{
-		if (!RPS_GameModeBase->OnRoundRemainingSecondsChanged.IsAlreadyBound(
-			this, &ThisClass::HandleOnRoundRemainingSecondsChanged))
-		{
-			RPS_GameModeBase->OnRoundRemainingSecondsChanged.AddDynamic(
-				this, &ThisClass::HandleOnRoundRemainingSecondsChanged);
-		}
+		RPS_GameModeBase->OnRoundRemainingSecondsChanged.AddDynamic(
+			this, &ThisClass::HandleOnRoundRemainingSecondsChanged);
 	}
 }
 
