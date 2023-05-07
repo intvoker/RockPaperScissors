@@ -10,22 +10,22 @@ void URPS_StartRoundWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	SetStartRoundInfo();
+	if (StartRoundTextBlock)
+	{
+		StartRoundTextBlock->SetText(GetStartRoundInfo());
+	}
 }
 
-void URPS_StartRoundWidget::SetStartRoundInfo() const
+FText URPS_StartRoundWidget::GetStartRoundInfo() const
 {
-	if (!StartRoundTextBlock)
-		return;
-
 	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
 	if (!RPS_GameModeBase)
-		return;
+		return FText::GetEmpty();
 
 	//const auto StartRoundHandPoseName = RPS_GameModeBase->GetStartRoundHandPoseName();
 	const auto StartRoundHandPoseName = TEXT("Thumb Up");
 
 	const auto StartRoundInfo = FString::Printf(TEXT("Use %s to start a new round"), StartRoundHandPoseName);
 
-	StartRoundTextBlock->SetText(FText::FromString(StartRoundInfo));
+	return FText::FromString(StartRoundInfo);
 }

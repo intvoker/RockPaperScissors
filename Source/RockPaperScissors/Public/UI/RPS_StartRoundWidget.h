@@ -23,5 +23,5 @@ protected:
 	virtual void NativeOnInitialized() override;
 
 private:
-	void SetStartRoundInfo() const;
+	FText GetStartRoundInfo() const;
 };

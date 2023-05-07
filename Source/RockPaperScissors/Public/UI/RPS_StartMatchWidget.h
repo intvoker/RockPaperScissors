@@ -23,5 +23,5 @@ protected:
 	virtual void NativeOnInitialized() override;
 
 private:
-	void SetStartMatchInfo() const;
+	FText GetStartMatchInfo() const;
 };

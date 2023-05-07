@@ -10,17 +10,17 @@ void URPS_StartMatchWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	SetStartMatchInfo();
+	if (StartMatchTextBlock)
+	{
+		StartMatchTextBlock->SetText(GetStartMatchInfo());
+	}
 }
 
-void URPS_StartMatchWidget::SetStartMatchInfo() const
+FText URPS_StartMatchWidget::GetStartMatchInfo() const
 {
-	if (!StartMatchTextBlock)
-		return;
-
 	const auto RPS_GameModeBase = GetWorld()->GetAuthGameMode<ARPS_GameModeBase>();
 	if (!RPS_GameModeBase)
-		return;
+		return FText::GetEmpty();
 
 	//TArray<FInputActionKeyMapping> OutMappings;
 	//GetDefault<UInputSettings>()->GetActionMappingByName("StartMatch", OutMappings);
@@ -29,5 +29,5 @@ void URPS_StartMatchWidget::SetStartMatchInfo() const
 
 	const auto StartMatchInfo = FString::Printf(TEXT("Use %s to start a new match"), StartMatchHandPoseName);
 
-	StartMatchTextBlock->SetText(FText::FromString(StartMatchInfo));
+	return FText::FromString(StartMatchInfo);
 }
