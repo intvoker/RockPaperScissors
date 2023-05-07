@@ -202,6 +202,7 @@ void ARPS_GameModeBase::StartRound()
 
 	CurrentRoundIndex++;
 	CurrentRoundRemainingSeconds = GameData.RoundTime;
+	OnRoundRemainingSecondsChanged.Broadcast(CurrentRoundRemainingSeconds);
 
 	SetGameRoundState(ERPS_GameRoundState::Started);
 
@@ -214,6 +215,7 @@ void ARPS_GameModeBase::StartRound()
 void ARPS_GameModeBase::UpdateRound()
 {
 	CurrentRoundRemainingSeconds -= UpdateRoundTime;
+	OnRoundRemainingSecondsChanged.Broadcast(CurrentRoundRemainingSeconds);
 
 	if (CurrentRoundRemainingSeconds <= 0)
 	{

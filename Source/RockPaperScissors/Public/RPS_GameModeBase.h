@@ -16,6 +16,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameMatchStateChangedSignature, ERP
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameRoundStateChangedSignature, ERPS_GameRoundState, GameRoundState);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundRemainingSecondsChangedSignature, int32, RoundRemainingSeconds);
+
 USTRUCT(BlueprintType)
 struct FRPS_GameData
 {
@@ -43,7 +45,10 @@ public:
 	ARPS_GameModeBase();
 
 	FGameMatchStateChangedSignature OnGameMatchStateChanged;
+
 	FGameRoundStateChangedSignature OnGameRoundStateChanged;
+
+	FRoundRemainingSecondsChangedSignature OnRoundRemainingSecondsChanged;
 
 	virtual void StartPlay() override;
 
