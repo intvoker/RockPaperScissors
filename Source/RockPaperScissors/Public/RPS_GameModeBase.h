@@ -7,6 +7,7 @@
 #include "RPS_Types.h"
 #include "RPS_GameModeBase.generated.h"
 
+class ARPS_GameRulesBase;
 class ARPS_Hand;
 class ARPS_Pawn;
 class ARPS_PlayerState;
@@ -23,8 +24,11 @@ struct FRPS_GameData
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	ERPS_GameRules GameRules = ERPS_GameRules::RPSFW;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
-	int32 NumberOfRounds = 3;
+	int32 NumberOfRounds = 5;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
 	int32 RoundTime = 3;
@@ -89,10 +93,7 @@ protected:
 	float ItemActorDistance = 50.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
-	int32 NumberOfPlayingPoses = 3;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Game")
-	int32 StartRoundPoseIndex = 3;
+	int32 StartRoundPoseIndex = 5;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Game")
 	FRPS_GameData GameData;
@@ -103,10 +104,12 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	bool IsPlayingPose(int32 PoseIndex) const { return PoseIndex >= 0 && PoseIndex < NumberOfPlayingPoses; }
 	bool IsStartRoundPose(int32 PoseIndex) const { return PoseIndex == StartRoundPoseIndex; }
 
 private:
+	UPROPERTY()
+	ARPS_GameRulesBase* GameRules;
+
 	UPROPERTY()
 	ARPS_WidgetActor* WidgetActor;
 
@@ -127,6 +130,7 @@ private:
 	void ResetPlayerStates() const;
 	void ResetPawns() const;
 
+	void SetupGameRules();
 	void SetupPawns();
 	void SetPlayerNames() const;
 
@@ -154,9 +158,6 @@ private:
 	void ReadHandPoses() const;
 
 	bool ReadHandPose(const ARPS_Hand* PlayerHand, ARPS_Hand* AIHand) const;
-
-	int32 GetRandomHandPoseIndex() const;
-	int32 GetWinHandPoseIndex(int32 PoseIndex) const;
 
 	void Posed(int32 PlayerPoseIndex, int32 AIPoseIndex) const;
 

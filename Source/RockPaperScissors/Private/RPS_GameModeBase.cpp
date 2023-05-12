@@ -3,6 +3,9 @@
 
 #include "RPS_GameModeBase.h"
 
+#include "GameRules/RPS_GameRulesBase.h"
+#include "GameRules/RPS_GameRulesRPS.h"
+#include "GameRules/RPS_GameRulesRPSFW.h"
 #include "Hands/RPS_Hand.h"
 #include "Player/RPS_PlayerController.h"
 #include "Player/RPS_PlayerPawn.h"
@@ -22,6 +25,7 @@ void ARPS_GameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
+	SetupGameRules();
 	SetupPawns();
 	SetPlayerNames();
 
@@ -134,6 +138,18 @@ void ARPS_GameModeBase::ResetPawns() const
 	if (AIPawn)
 	{
 		AIPawn->ResetHands();
+	}
+}
+
+void ARPS_GameModeBase::SetupGameRules()
+{
+	if (GameData.GameRules == ERPS_GameRules::RPS)
+	{
+		GameRules = NewObject<ARPS_GameRulesRPS>();
+	}
+	else if (GameData.GameRules == ERPS_GameRules::RPSFW)
+	{
+		GameRules = NewObject<ARPS_GameRulesRPSFW>();
 	}
 }
 
@@ -284,7 +300,8 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognized(int32 PoseIndex, const FStrin
 		return;
 	}
 
-	if (GameRoundState == ERPS_GameRoundState::Started && IsPlayingPose(PoseIndex) && GameData.bImmediatePlay)
+	if (GameRoundState == ERPS_GameRoundState::Started && GameRules->IsPlayingPose(PoseIndex)
+		&& GameData.bImmediatePlay)
 	{
 		EndRound();
 	}
@@ -310,9 +327,9 @@ bool ARPS_GameModeBase::ReadHandPose(const ARPS_Hand* PlayerHand, ARPS_Hand* AIH
 		return false;
 
 	const auto PlayerPoseIndex = PlayerHand->GetHandPose();
-	const auto AIPoseIndex = GetRandomHandPoseIndex();
+	const auto AIPoseIndex = GameRules->GetRandomHandPoseIndex();
 
-	if (IsPlayingPose(PlayerPoseIndex))
+	if (GameRules->IsPlayingPose(PlayerPoseIndex))
 	{
 		AIHand->SetHandPose(AIPoseIndex);
 
@@ -324,28 +341,6 @@ bool ARPS_GameModeBase::ReadHandPose(const ARPS_Hand* PlayerHand, ARPS_Hand* AIH
 	return false;
 }
 
-int32 ARPS_GameModeBase::GetRandomHandPoseIndex() const
-{
-	return FMath::RandRange(0, NumberOfPlayingPoses - 1);
-}
-
-int32 ARPS_GameModeBase::GetWinHandPoseIndex(int32 PoseIndex) const
-{
-	if (PoseIndex == ARPS_Hand::DefaultHandPoseIndex)
-		return ARPS_Hand::DefaultHandPoseIndex;
-
-	if (!IsPlayingPose(PoseIndex))
-		return ARPS_Hand::DefaultHandPoseIndex;
-
-	auto WinPoseIndex = PoseIndex + 1;
-	if (WinPoseIndex >= NumberOfPlayingPoses)
-	{
-		WinPoseIndex = 0;
-	}
-
-	return WinPoseIndex;
-}
-
 void ARPS_GameModeBase::Posed(int32 PlayerPoseIndex, int32 AIPoseIndex) const
 {
 	const auto PlayerState = GetPlayerState();
@@ -354,12 +349,15 @@ void ARPS_GameModeBase::Posed(int32 PlayerPoseIndex, int32 AIPoseIndex) const
 	if (!PlayerState || !AIPlayerState)
 		return;
 
+	TArray<int32> OutPoseIndexes;
+	GameRules->GetWinHandPoseIndexes(AIPoseIndex, OutPoseIndexes);
+
 	if (PlayerPoseIndex == AIPoseIndex)
 	{
 		PlayerState->AddTie(CurrentRoundIndex, PlayerPoseIndex);
 		AIPlayerState->AddTie(CurrentRoundIndex, AIPoseIndex);
 	}
-	else if (PlayerPoseIndex == GetWinHandPoseIndex(AIPoseIndex))
+	else if (OutPoseIndexes.Contains(PlayerPoseIndex))
 	{
 		PlayerState->AddWin(CurrentRoundIndex, PlayerPoseIndex);
 		AIPlayerState->AddLoss(CurrentRoundIndex, AIPoseIndex);
