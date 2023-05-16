@@ -300,10 +300,12 @@ void ARPS_GameModeBase::HandleOnHandPoseRecognized(int32 PoseIndex, const FStrin
 		return;
 	}
 
-	if (GameRoundState == ERPS_GameRoundState::Started && GameRules->IsPlayingPose(PoseIndex)
-		&& GameData.bImmediatePlay)
+	if (GameRoundState == ERPS_GameRoundState::Started && GameRules->IsPlayingPose(PoseIndex))
 	{
-		EndRound();
+		if (CurrentRoundRemainingSeconds == UpdateRoundTime || GameData.bImmediatePlay)
+		{
+			EndRound();
+		}
 	}
 }
 
