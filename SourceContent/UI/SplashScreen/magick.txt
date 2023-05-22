@@ -1,0 +1,3 @@
+dot -Tsvg RPSFW.dot > RPSFW.svg
+
+magick convert -background none RPSFW.svg RPSFW.png

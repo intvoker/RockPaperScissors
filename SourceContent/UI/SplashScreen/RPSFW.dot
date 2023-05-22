@@ -1,0 +1,28 @@
+digraph RPSFW
+	{
+		graph [size="15!"]
+		layout="circo"
+		normalize=true
+
+		water [shape=circle width=1 fixedsize=true style=filled color="#89BCBC"]
+
+		rock [shape=circle width=1 fixedsize=true style=filled color="#A5BC89"]
+		scissors [shape=circle width=1 fixedsize=true style=filled color="#A589BC"]
+		paper [shape=circle width=1 fixedsize=true style=filled color="#FFFFA5"]
+
+		fire [shape=circle width=1 fixedsize=true style=filled color="#BC8989"]
+
+		water -> fire [style="bold" color="#89BCBC"];
+
+		rock -> scissors [style="bold" color="#A5BC89"];
+		scissors -> paper [style="bold" color="#A589BC"];
+		paper -> rock [style="bold" color="#FFFFA5"];
+
+		rock -> water [style="bold" color="#A5BC89"];
+		scissors -> water [style="bold" color="#A589BC"];
+		paper -> water [style="bold" color="#FFFFA5"];
+
+		fire -> rock [style="bold" color="#BC8989"];
+		fire -> scissors [style="bold" color="#BC8989"];
+		fire -> paper [style="bold" color="#BC8989"];
+	}

@@ -4,6 +4,8 @@
 #include "UI/RPS_HUD.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Kismet/StereoLayerFunctionLibrary.h"
+#include "OculusFunctionLibrary.h"
 #include "RPS_GameModeBase.h"
 #include "UI/RPS_WidgetActor.h"
 
@@ -22,6 +24,8 @@ void ARPS_HUD::BeginPlay()
 		RPS_GameModeBase->OnGameMatchStateChanged.AddDynamic(this, &ThisClass::HandleOnGameMatchStateChanged);
 		RPS_GameModeBase->OnGameRoundStateChanged.AddDynamic(this, &ThisClass::HandleOnGameRoundStateChanged);
 	}
+
+	ShowSplashScreen();
 }
 
 void ARPS_HUD::HandleOnGameMatchStateChanged(ERPS_GameMatchState GameMatchState)
@@ -67,4 +71,23 @@ void ARPS_HUD::SetCurrentGameWidget(UUserWidget* InWidget)
 	{
 		CurrentGameWidget->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void ARPS_HUD::ShowSplashScreen()
+{
+	if (!SplashScreen)
+		return;
+
+	UOculusFunctionLibrary::AddLoadingSplashScreen(SplashScreen, SplashScreenTranslationInMeters, FRotator::ZeroRotator,
+	                                               SplashScreenSizeInMeters);
+
+	UStereoLayerFunctionLibrary::ShowSplashScreen();
+
+	GetWorld()->GetTimerManager().SetTimer(SplashScreenTimerHandle, this, &ThisClass::HideSplashScreen,
+	                                       SplashScreenDelay);
+}
+
+void ARPS_HUD::HideSplashScreen()
+{
+	UStereoLayerFunctionLibrary::HideSplashScreen();
 }

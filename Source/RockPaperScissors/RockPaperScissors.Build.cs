@@ -11,7 +11,7 @@ public class RockPaperScissors : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 			{ "Core", "CoreUObject", "Engine", "InputCore", "OculusInput", "SlateCore", "UMG" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "OculusHandPoseRecognition" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "OculusHandPoseRecognition", "OculusHMD" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

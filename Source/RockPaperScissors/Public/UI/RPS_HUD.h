@@ -28,6 +28,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> GameRoundEndedWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UTexture2D* SplashScreen;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FVector SplashScreenTranslationInMeters = FVector(4.0f, 0.0f, 1.0f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FVector2D SplashScreenSizeInMeters = FVector2D(3.0f, 3.0f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float SplashScreenDelay = 5.0f;
+
 	virtual void BeginPlay() override;
 
 private:
@@ -40,6 +52,8 @@ private:
 	UPROPERTY()
 	TMap<ERPS_GameRoundState, UUserWidget*> GameRoundWidgets;
 
+	FTimerHandle SplashScreenTimerHandle;
+
 	UFUNCTION()
 	void HandleOnGameMatchStateChanged(ERPS_GameMatchState GameMatchState);
 
@@ -49,4 +63,7 @@ private:
 	UUserWidget* CreateGameWidget(TSubclassOf<UUserWidget> WidgetClass) const;
 
 	void SetCurrentGameWidget(UUserWidget* InWidget);
+
+	void ShowSplashScreen();
+	void HideSplashScreen();
 };
