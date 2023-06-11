@@ -13,8 +13,8 @@
 
 ### Sample gameplay:
 
-[![Watch the video](https://img.youtube.com/vi/NYaSNUbfiVc/hqdefault.jpg)](https://youtu.be/NYaSNUbfiVc)
+[![Watch the video](https://img.youtube.com/vi/7PTOmPGmoRU/hqdefault.jpg)](https://youtu.be/7PTOmPGmoRU)
 
 ### Sample physics:
 
-[![Watch the video](https://img.youtube.com/vi/5ti8ZxKyce8/hqdefault.jpg)](https://youtu.be/5ti8ZxKyce8)
+[![Watch the video](https://img.youtube.com/vi/z3NWd6U9Lo4/hqdefault.jpg)](https://youtu.be/z3NWd6U9Lo4)
